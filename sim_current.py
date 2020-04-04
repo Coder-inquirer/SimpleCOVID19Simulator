@@ -138,9 +138,9 @@ ax2.set_ylim(0,N)
 scat = ax1.scatter(X, Y, c=C,cmap='jet',edgecolors='none')
 Sline, = ax2.plot([], [], lw=2, color='b', label='Susceptible')
 Iline, = ax2.plot([], [], lw=2, color='r', label='Infected')
-Rline, = ax2.plot([], [], lw=2, color='g', label='Removed')
+Rline, = ax2.plot([], [], lw=2, color='g', label='Recovered')
 #plt.legend()
-
+ax2.legend(bbox_to_anchor=(1.2, 1.15))
 # Animate
 t=0.0
 anim = animation.FuncAnimation(fig, update_plot, interval=0.1,
