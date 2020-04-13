@@ -1,9 +1,8 @@
-import csv
+#import csv
 import matplotlib.pyplot as plt
 from collections import deque
 import numpy as np
 from scipy.stats import gamma
-from vincenty import vincenty_inverse #(lon,lat)
 
 # PARAMETERS _______________________________________________________
 N_HISTORY_DAYS = 14
@@ -77,11 +76,6 @@ class Layer:
         # add newly exposed
         self.exposed_history.appendleft(new_exposed)
 
-    def expose_few(self,new_exposed):
-        self.E+=new_exposed
-        self.S-=new_exposed
-        self.exposed_history_push(new_exposed)
-
         
 # CLASS Block =============================================
 
@@ -116,61 +110,40 @@ class Block:
             
         self.calibrate_upwards()
 
-    def expose_few(self,new_exposed):
-        self.layers[0].expose_few(new_exposed)
+    def update_activate(self,force=0):
+        self.activation=force
         
-# OTHER FUNCTIONS ============================================================    
+#============================================================    
+n_days = 220
+city = [ Block([Layer(susc=BETA,N=10000,E=10),
+                Layer(susc=BETA/8.0,N=4000,E=0),
+                Layer(susc=BETA/4.0,N=1000,E=0)]) ,
+         Block([Layer(susc=BETA,N=10000,E=0),
+                Layer(susc=BETA/8.0,N=4000,E=0),
+                Layer(susc=BETA/4.0,N=1000,E=0)]) ,
+         Block([Layer(susc=BETA,N=10000,E=0),
+                Layer(susc=BETA/8.0,N=4000,E=0),
+                Layer(susc=BETA/4.0,N=1000,E=0)]) ,
+         Block([Layer(susc=BETA,N=10000,E=0),
+                Layer(susc=BETA/8.0,N=4000,E=0),
+                Layer(susc=BETA/4.0,N=1000,E=0)]) ,
+         Block([Layer(susc=BETA,N=10000,E=0),
+                Layer(susc=BETA/8.0,N=4000,E=0),
+                Layer(susc=BETA/4.0,N=1000,E=0)]) ,
+         Block([Layer(susc=BETA,N=10000,E=0),
+                Layer(susc=BETA/8.0,N=4000,E=0),
+                Layer(susc=BETA/4.0,N=1000,E=0)]) ,
+         Block([Layer(susc=BETA,N=10000,E=0),
+                Layer(susc=BETA/8.0,N=4000,E=0),
+                Layer(susc=BETA/4.0,N=1000,E=0)]) ]
 
-def create_block(N,layer_data):
-    layers=[]
-    for ld in layer_data:
-        layers.append(Layer(susc= BETA/0.45*float(ld["vulnerability"]),     #0.45 is based on the paper on delhi doi:10.1016/j.artmed.2015.06.003
-                            N  = N*float(ld["fraction"])    ))
-    return Block(layers=layers)
-
-# MAIN ============================================================================
-
-# Load layers data
-layer_data=[]
-with open('./vulnerability_delhi.csv', encoding='utf-8-sig') as csvfile:
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        #print(row)
-        layer_data.append({"vulnerability":row["vulnerability"],
-                           "fraction":row["fraction"]})
-
-# Load blocks data
-ward=[]
-with open('./delhi_lat_lon_popl.csv', encoding='utf-8-sig') as csvfile:
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        row['lat']=float(row['lat'])
-        row['lon']=float(row['lon'])
-        row['population']=int(row['population'])
-        ward.append(row)
-TOTAL_POPULATION = 0
-for i in range(len(ward)):
-    TOTAL_POPULATION += ward[i]['population']
-print('TOTAL_POPULATION =',TOTAL_POPULATION)
-
-
-adj = np.eye(len(ward))
-distance=np.zeros((len(ward),len(ward)))
-
-for j in range(len(ward)):
-    for k in range(len(ward)):
-        if j!=k:
-            distance[j][k]=vincenty_inverse([ward[j]['lon'],ward[j]['lat']],[ward[k]['lon'],ward[k]['lat']]).km
-            if distance[j][k]<10:
-                adj[j][k]=1/distance[j][k]/100
-            
-n_days = 120
-city = []
-
-for i in range(len(ward)):
-    city.append(create_block(ward[i]['population'],layer_data))
-
-city[0].expose_few(20)
+#ones=0.05*np.random.rand(len(city),len(city))
+#adj = np.eye(len(city))+np.tril(ones,-1)+np.triu(ones,+1)
+adj = np.eye(len(city))\
+      +0.01*np.eye(len(city),k=1)\
+      +0.01*np.eye(len(city),k=-1)\
+      +0.01*np.eye(len(city),k=-2)\
+      +0.01*np.eye(len(city),k=2)
 
 print(adj)
 
@@ -179,7 +152,7 @@ E=[]
 I=[]
 R=[]
 for i in range(n_days):
-    print(i)
+
     for j in range(len(city)):
         city[j].activation=0
         for k in range(len(city)):
@@ -196,7 +169,7 @@ for i in range(n_days):
 #plt.stackplot(range(N_HISTORY_DAYS),STAGE_FRAC.values(),labels=STAGE_FRAC)
 plt.plot(range(n_days),E,label="E")
 plt.plot(range(n_days),R,label="R")
-#plt.ylim(0,sum([city[j].N for j in range(len(city))]))
+plt.ylim(0,sum([city[j].N for j in range(len(city))]))
 plt.legend()
 plt.show()
     
