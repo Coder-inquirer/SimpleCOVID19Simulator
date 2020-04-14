@@ -1,9 +1,9 @@
 {
   "stages":{
     "E":{
-      "count":0,
+      "count":0.0,
       "infectiousness":0.2,
-      "qaurantine_fraction":0
+      "qaurantine_fraction":0.0
     },
     "A":{
       "count":0,
