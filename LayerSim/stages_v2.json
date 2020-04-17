@@ -30,7 +30,7 @@
   },
   
   "stagesInfectiousness":{
-    "E"::0.2,
+    "E":0.2,
     "A":0.8,
     "I":1.0,
     "R":0
