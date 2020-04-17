@@ -29,6 +29,13 @@
     "R":0
   },
   
+  "stagesQuarantineFractionLockdown":{
+    "E":0.8,
+    "A":0.8,
+    "I":0.98,
+    "R":0.8
+  },
+  
   "stagesInfectiousness":{
     "E":0.2,
     "A":0.8,
