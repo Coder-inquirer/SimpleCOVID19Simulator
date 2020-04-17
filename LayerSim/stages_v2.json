@@ -1,0 +1,52 @@
+{
+  "stages":{
+    "E":{
+      "count":0,
+      "infectiousness":0.2,
+      "qaurantine_fraction":0
+    },
+    "A":{
+      "count":0,
+      "infectiousness":0.8,
+      "qaurantine_fraction":0
+    },
+    "I":{
+      "count":0,
+      "infectiousness":1,
+      "qaurantine_fraction":0
+    },
+    "R":{
+      "count":0,
+      "infectiousness":0,
+      "qaurantine_fraction":0
+    }
+  },
+  
+  "stagesQuarantineFraction":{
+    "E":0,
+    "A":0,
+    "I":0,
+    "R":0
+  },
+  
+  "stagesInfectiousness":{
+    "E"::0.2,
+    "A":0.8,
+    "I":1.0,
+    "R":0
+  },
+
+  "stagesCount":{
+    "E"::0,
+    "A":0,
+    "I":0,
+    "R":0
+  },
+  
+  "stage_fractions_by_days":{
+    "E":[1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.0,0.0,0.0,0.0],
+    "A":[0.0,0.1,0.1,0.2,0.2,0.3,0.3,0.4,0.4,0.5,0.4,0.3,0.2,0.0],
+    "I":[0.0,0.0,0.1,0.1,0.2,0.2,0.3,0.3,0.4,0.4,0.5,0.4,0.3,0.0],
+    "R":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.1,0.3,0.5,1.0]
+  }
+}
