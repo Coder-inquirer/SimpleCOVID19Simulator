@@ -25,7 +25,7 @@
   "stagesQuarantineFraction":{
     "E":0,
     "A":0,
-    "I":0.9,
+    "I":0.95,
     "R":0
   },
   
