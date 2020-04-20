@@ -23,10 +23,10 @@
   },
   
   "stagesQuarantineFraction":{
-    "E":0,
-    "A":0,
+    "E":0.3,
+    "A":0.3,
     "I":0.95,
-    "R":0
+    "R":0.4
   },
   
   "stagesQuarantineFractionLockdown":{
