@@ -31,7 +31,7 @@
   
   "stagesQuarantineFractionLockdown":{
     "E":0.8,
-    "A":0.8,
+    "A":0.95,
     "I":0.9,
     "R":0.8
   },
