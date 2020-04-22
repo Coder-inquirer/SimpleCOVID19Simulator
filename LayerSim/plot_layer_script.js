@@ -16,9 +16,19 @@ Use stages_v2.json for this version
 // PARAMETERS __________________________
 const N_HISTORY_DAYS = 14;
 const T_STEP = 1;
-const BETA = 0.6172;
+let BETA = 0.6172;
 
 // GLOBAL VARIABLES ____________________
+
+let myLayers = [];
+let myBlocks = [];
+let adj=[];
+
+let xData=[];
+let ySData=[];
+let yIData=[];
+let yRData=[];
+
 let globalStageData=null;
 let globalStages=null;
 let globalStage_fractions_by_days=null;
@@ -26,8 +36,34 @@ let globalStagesCount = null;
 let globalStagesQuarantineFraction = null;
 let globalStagesInfectiousness = null;
 let globalStagesQuarantineFractionLockdown=null;
+let wards,layersData;
+
+let steps=[];
+let config=[];
 
 let progress = document.getElementById('myProgressBar');
+let triggering = true;
+let lockdownOnTrigger = 1000;
+let lockdownOffTrigger = 50;
+let lockdownImposed=false;
+let nDays = 120;
+
+let mySIRChart=null,mySChart=null,myIChart=null,myRChart=null,myProgressionChart=null;
+let triggeringCheckbox = document.getElementById('triggeringCheckbox');
+let triggerOnDisplay   = document.getElementById('triggerOnDisplay');
+let triggerOffDisplay  = document.getElementById('triggerOffDisplay');
+let nDaysDisplay       = document.getElementById('nDaysDisplay');
+let betaDisplay        = document.getElementById('betaDisplay');
+let myLogo = document.getElementById('myLogo');
+let runOnce=false;
+
+nDaysDisplay.value = nDays;
+betaDisplay.value=BETA;
+triggerOffDisplay.value=lockdownOffTrigger;
+triggerOnDisplay.value=lockdownOnTrigger;
+
+
+//triggering = triggeringCheckbox.value;
 
 // CLASSES _____________________________
 
@@ -200,12 +236,7 @@ async function getLayerData(){
   
   const rows = data.split('\n').slice(1);
   rows.forEach(elt=>{
-    const row = elt.split(',');
-    const id = row[0];
-    const lon=row[1];
-    const lat=row[2];
-    const popl=row[3];
-    
+    const row = elt.split(',');    
     myLayers.push(clone({"vulnerability":row[0],"fraction":row[1] } ));
   });
   return myLayers;
@@ -224,14 +255,18 @@ function createNewBlock(N,id,layersData){
   return myBlock;
 }
 
-async function simulate(){
-  progress.value=0.1
-  const wards = await getWardData();
-  progress.value=0.3;
-  const layersData = await getLayerData();
-  progress.value=0.4;
-  globalStageData = await getStageData();
-  progress.value=0.5;
+async function initialize(loadData=true){
+  progress.value=0.1;
+  if (loadData==true){
+    wards = await getWardData();
+    progress.value=0.3;
+    layersData = await getLayerData();
+    progress.value=0.4;
+    console.log("gotLayer");
+    globalStageData = await getStageData();
+    console.log("gotStage");
+  }
+  progress.value=0.7;
   globalStages = globalStageData.stages;
   globalStage_fractions_by_days = globalStageData.stage_fractions_by_days;
   globalStagesCount = clone(globalStageData.stagesCount);
@@ -240,17 +275,12 @@ async function simulate(){
   globalStagesInfectiousness = clone(globalStageData.stagesInfectiousness);
   
   
-  let myLayers = [];
-  let myBlocks = [];
-  
-  let xData=[];
-  let ySData=[];
-  let yIData=[];
-  let yRData=[];
-  let adj=[];
+  myLayers = [];
+  myBlocks = [];
+  adj=[];
   
   for(let i=0; i<wards.length-1; i++){
-    progress.value=(i+1)/wards.length;
+    //progress.value=(i+1)/wards.length;
     if(wards[i]!=null){
       //let myBlock=createNewBlock(parseFloat(wards[i]['popl']),layersData);
       myBlocks.push(createNewBlock(parseFloat(wards[i]['popl']),id=wards[i]['id'],layersData));
@@ -272,18 +302,28 @@ async function simulate(){
   }
   progress.value=0.6;
   
-  
+  xData=[];
+  ySData=[];
+  yIData=[];
+  yRData=[];
+}
+
+async function simulate(loadData=true,wannaInitialize=true){
+  let t_0=0;
+  if (wannaInitialize==true){
+    await initialize(loadData);
+    t_0=0;
+  }
+  else{
+    t_0 = 1+xData[xData.length-1];
+  }
+
   myBlocks[0].exposeFew(1);
-  let triggering = true;
-  let lockdownOnTrigger = 1000;
-  let lockdownOffTrigger = 50;
-  let lockdownImposed=false;
   
   
-  let NDays=320
-  
-  for(let i=0; i<NDays; i++){
-    progress.value=(i+1)/NDays;
+  for(let i=0; i<nDays; i++){
+    //console.log(i+t_0);
+    progress.value=(i)/nDays;
     let yS=0;
     let yI=0;
     let yR=0;
@@ -303,6 +343,7 @@ async function simulate(){
       yI+=myBlocks[j].N-myBlocks[j].S-myBlocks[j].R;
       yR+=myBlocks[j].R;
     }
+    
     if (triggering==true){
       if (lockdownImposed==false && yI>lockdownOnTrigger){
         lockdownImposed=true; 
@@ -313,7 +354,7 @@ async function simulate(){
         globalStagesQuarantineFraction = clone(globalStageData.stagesQuarantineFraction);
       }
     }
-    xData.push(i);
+    xData.push(i+t_0);
     ySData.push(yS);
     yIData.push(yI);
     yRData.push(yR);
@@ -329,24 +370,33 @@ async function simulate(){
                   'rgba(0,255,0,0.5)'
                  ];
                  
-  chartIt('myChart',xData,[ySData,yIData,yRData],["S","I","R"],colors,bgColors,'SIR Simulation',true,false,'logarithmic');
-  chartIt('mySChart',xData,[ySData],["S"],[colors[0]],[bgColors[0]],'Susceptible');
-  chartIt('myIChart',xData,[yIData],["I"],[colors[1]],[bgColors[1]],'Infectious');
-  chartIt('myRChart',xData,[yRData],["R"],[colors[2]],[bgColors[2]],'Recovered');
+  let xlabel = "Days";
+  let ylabel = "Number of people";
+  chartIt(mySIRChart,'myChart',xData,[ySData,yIData,yRData],["S","I","R"],colors,bgColors,xlabel,ylabel,'SIR Simulation',true,false,'logarithmic');
+  chartIt(mySIRChart,'myChartLinear',xData,[ySData,yIData,yRData],["S","I","R"],colors,bgColors,xlabel,ylabel,'SIR Simulation',true,false,'linear');
+  chartIt(mySChart,'mySChart',xData,[ySData],["S"],[colors[0]],[bgColors[0]],xlabel,ylabel,'Susceptible');
+  chartIt(myIChart,'myIChart',xData,[yIData],["I"],[colors[1]],[bgColors[1]],xlabel,ylabel,'Infectious');
+  chartIt(myRChart,'myRChart',xData,[yRData],["R"],[colors[2]],[bgColors[2]],xlabel,ylabel,'Recovered');
   progress.style="width:0%";    //QUICK AND DIRTY
   console.log(myBlocks[0]);
+  
+  let rerunBtn = document.getElementById("rerun");
+  rerunBtn.style.display = "inline";
+  myLogo = document.getElementById('myLogo');
+  myLogo.innerHTML = "EPIDEMULATOR";
 }
 
-async function chartIt(chartId,xData,yData,labels,colors,bgColors,title,legendDisplay=false,stacked=false,yType='linear'){ // xData=[x1,x2,...], yData=[[y11,y12,...],[y21,y22,...],...], labels=[l1,l2,...]
+async function chartIt(myChart,chartId,xData,yData,labels,colors,bgColors,xlabel,ylabel,title,legendDisplay=false,stacked=false,yType='linear'){ // data format:  xData=[x1,x2,...], yData=[[y11,y12,...],[y21,y22,...],...], labels=[l1,l2,...]
   
+  let canvas = document.getElementById(chartId);
+  let ctx = document.getElementById(chartId).getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
   
-  let ctx = document.getElementById(chartId);
   Chart.defaults.global.elements.line.borderWidth = 10;
   //Chart.defaults.global.elements.point.backgroundColor = 'rgba(0, 0, 0, 0.1)';
   
   datasets=[];
   for (index in yData){
-    console.log("index");
     dataset = {
         label: labels[index],
         data: yData[index],
@@ -358,7 +408,9 @@ async function chartIt(chartId,xData,yData,labels,colors,bgColors,title,legendDi
     datasets.push(dataset);
   }
   
-  let myChart = new Chart(ctx, {
+  myChart=null;
+  
+  myChart = new Chart(ctx, {
     type: 'line',
     data: {
           labels: xData,
@@ -368,7 +420,7 @@ async function chartIt(chartId,xData,yData,labels,colors,bgColors,title,legendDi
           legend:{
             display: legendDisplay
           },
-          //responsive: true,
+          responsive: true,
           //maintainAspectRatio: false,
           title: {
               display: true,
@@ -380,13 +432,13 @@ async function chartIt(chartId,xData,yData,labels,colors,bgColors,title,legendDi
                   stacked: stacked,
                   scaleLabel:{
                       display: true,
-                      labelString: "Number of people"
+                      labelString: ylabel
                   }
               }],
               xAxes: [{
                   scaleLabel:{
                       display: true,
-                      labelString: "Days"
+                      labelString: xlabel
                   }
               }]
           }
@@ -401,7 +453,78 @@ async function plotParams(){
   labels = fraction.labels;
   const colors=['blue','yellow','red','green'];
   const bgColors=['blue','yellow','red','green'];
-  chartIt('myProgressionChart',xData,yData,labels,colors,bgColors,'Stage Progression Parameters',true,true);
+  let xlabel = "Days since exposure";
+  let ylabel = "Fraction of people in the stage";
+  chartIt(myProgressionChart,'myProgressionChart',xData,yData,labels,colors,bgColors,xlabel,ylabel,'Stage Progression Parameters',true,true);
+}
+
+async function plotInfectiousnessEtc(){
+  globalStageData = await getStageData();
+  globalStagesInfectiousness = globalStageData.stagesInfectiousness;
+  xData = [];
+  yIData = [];
+  yQData = [];
+  yQLData = [];
+  for (let stageName in globalStageData.stagesInfectiousness){
+    xData.push(stageName);
+    yIData.push(parseFloat(globalStageData.stagesInfectiousness[stageName]));
+    yQLData.push(parseFloat(globalStageData.stagesQuarantineFractionLockdown[stageName]));
+    yQData.push(parseFloat(globalStageData.stagesQuarantineFraction[stageName]));
+  }
+  const colors=['blue','yellow','red','green'];
+  const bgColors=['blue','yellow','red','green'];
+  let xlabel = "Stages";
+  barChart("myInfectiousnessChart",xData,yIData,colors,bgColors,xlabel,"Infectiousness","Infectiousness of stages");
+  barChart("myQuarantineChart",xData,yQData,colors,bgColors,xlabel,"Percent isolation","Isolation practiced by stages");
+  barChart("myQuarantineLockdownChart",xData,yQLData,colors,bgColors,xlabel,"Percent isolation","Isolation practiced by stages during Lockdown");
+}
+
+async function barChart(chartId,xData,yData,colors,bgColors,xlabel,ylabel,title){
+  let ctx = document.getElementById(chartId).getContext('2d');
+  
+  let myBarChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+          labels: xData,
+          datasets: [{
+              data: yData,
+              borderColor:colors,
+              backgroundColor:bgColors,
+              borderWidth: 1
+            }]
+          },
+      options: {
+          legend:{
+            display: false
+          },
+          responsive: true,
+          maintainAspectRatio: false,
+          title: {
+              display: true,
+              text: title
+          },
+          scales: {
+              yAxes: [{
+                  scaleLabel:{
+                      display: true,
+                      labelString: ylabel
+                  },
+                  ticks:{
+                    max:1,
+                    min:0,
+                    autoSkip:true,
+                    autoSkipPadding:1
+                  }
+              }],
+              xAxes: [{
+                  scaleLabel:{
+                      display: true,
+                      labelString: xlabel
+                  }
+              }]
+          }
+      }
+  });
 }
 
 async function getStagesFractionChartData(){
@@ -458,8 +581,188 @@ function haversine(lon1,lat1,lon2,lat2){
 
   return R * c;
 }
- 
-simulate();
+
+function triggeringChanged(){
+  triggering = triggeringCheckbox.checked;
+}
+
+function triggerOnChanged(){
+  lockdownOnTrigger = parseInt(triggerOnDisplay.value);
+}
+
+function triggerOffChanged(){
+  lockdownOffTrigger = parseInt(triggerOffDisplay.value);
+}
+
+function nDaysChanged(){
+  nDays = parseInt(nDaysDisplay.value);
+}
+
+function betaChanged(){
+  BETA = parseInt(betaDisplay.value);
+}
+
+async function addStep(){
+  steps.push(clone({
+    'nDays':nDays,
+    'BETA' :BETA,
+    'triggering':triggering,
+    'lockdownOnTrigger':lockdownOnTrigger,
+    'lockdownOffTrigger':lockdownOffTrigger
+  }));
+}
+
+async function continueRun(){
+  await simulate(false,false);
+  await addStep();
+} 
+
+async function run(){
+  console.log('First run started');
+  progress.value=0;
+  progress.style="width:100%";    //QUICK AND DIRTY
+  let myLogo = document.getElementById('myLogo');
+  myLogo.innerHTML = "EPIDEMULATOR  Loading...";
+  await simulate(!runOnce);
+  runOnce=true;
+  progress.value=1.0;
+  progress.style="width:0%";    //QUICK AND DIRTY
+  myLogo.innerHTML = "EPIDEMULATOR";
+  document.getElementById("cardChart").style.display = "block";
+  await addStep();
+} 
+
+async function saveJSON(saveStepsId="saveSteps"){
+  document.getElementById(saveStepsId).value = JSON.stringify(steps);
+}
+
+async function loadJSON(loadStepsId="loadSteps"){
+  console.log("loadSteps");
+  let loadedSteps=JSON.parse(document.getElementById(loadStepsId).value);
+  console.log(loadedSteps);
+  
+  for (let i=0; i<loadedSteps.length; i++){
+    console.log(i);
+    nDays=clone(loadedSteps[i]['nDays']);
+    BETA=clone(loadedSteps[i]['BETA']);
+    triggering=clone(loadedSteps[i]['triggering']);
+    lockdownOnTrigger=clone(loadedSteps[i]['lockdownOnTrigger']);
+    lockdownOffTrigger=clone(loadedSteps[i]['lockdownOffTrigger']);
+    if (i==0)
+      await run();
+    else
+      await continueRun();
+  }
+  
+}
+
+async function copyToClipboard(elementId){
+  var copyText = document.getElementById(elementId);
+  copyText.select();
+  copyText.setSelectionRange(0, 99999)
+  document.execCommand("copy");
+}
+
 plotParams();
+plotInfectiousnessEtc();
+//plotQuarantineFraction();
+///////////////////////////////////////////////////////////////// EXTERNAL /////////////////////////////////////
+/*
+// some data to be plotted
+var x_data = [1500,1600,1700,1750,1800,1850,1900,1950,1999,2050];
+var y_data_1 = [86,114,106,106,107,111,133,221,783,2478];
+var y_data_2 = [2000,700,200,100,100,100,100,50,25,0];
 
+// globals
+var activePoint = null;
+var myDraggableChart = null;
 
+// draw a line chart on the myDraggableChart context
+window.onload = function () {
+
+    // Draw a line chart with two data sets
+    var ctx = document.getElementById("myDraggableChart").getContext("2d");
+    myDraggableChart = document.getElementById("myDraggableChart");
+    window.myChart = Chart.Line(ctx, {
+        data: {
+            labels: x_data,
+            datasets: [
+                {
+                    data: y_data_1,
+                    label: "Data 1",
+                    borderColor: "#3e95cd",
+                    fill: false
+                },
+                {
+                    data: y_data_2,
+                    label: "Data 2",
+                    borderColor: "#cd953e",
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            animation: {
+                duration: 0
+            },
+            tooltips: {
+                mode: 'nearest'
+            },
+            scales: {
+                yAxes: [{
+                    stacked: true
+                }]
+            }
+        }
+    });
+
+    // set pointer event handlers for canvas element
+    myDraggableChart.onpointerdown = down_handler;
+    myDraggableChart.onpointerup = up_handler;
+    myDraggableChart.onpointermove = null;
+};
+
+function down_handler(event) {
+    // check for data point near event location
+    const points = window.myChart.getElementAtEvent(event, {intersect: false});
+    if (points.length > 0) {
+        // grab nearest point, start dragging
+        activePoint = points[0];
+        myDraggableChart.onpointermove = move_handler;
+    };
+};
+
+function up_handler(event) {
+    // release grabbed point, stop dragging
+    activePoint = null;
+    myDraggableChart.onpointermove = null;
+};
+
+function move_handler(event)
+{
+    // locate grabbed point in chart data
+    if (activePoint != null) {
+        var data = activePoint._chart.data;
+        var datasetIndex = activePoint._datasetIndex;
+
+        // read mouse position
+        const helpers = Chart.helpers;
+        var position = helpers.getRelativePosition(event, myChart);
+
+        // convert mouse position to chart y axis value 
+        var chartArea = window.myChart.chartArea;
+        var yAxis = window.myChart.scales["y-axis-0"];
+        var yValue = map(position.y, chartArea.bottom, chartArea.top, yAxis.min, yAxis.max);
+
+        // update y value of active data point
+        data.datasets[datasetIndex].data[activePoint._index] = yValue;
+        window.myChart.update();
+    };
+};
+
+// map value to other coordinate system
+function map(value, start1, stop1, start2, stop2) {
+    return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1))
+};
+
+*/
