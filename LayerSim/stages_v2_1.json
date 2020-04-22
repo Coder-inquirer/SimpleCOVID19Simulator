@@ -2,7 +2,7 @@
   "stages":{
     "E":{
       "count":0,
-      "infectiousness":0.2,
+      "infectiousness":0.0,
       "qaurantine_fraction":0
     },
     "A":{
@@ -37,8 +37,8 @@
   },
   
   "stagesInfectiousness":{
-    "E":0.2,
-    "A":0.8,
+    "E":0.0,
+    "A":0.3,
     "I":1.0,
     "R":0
   },
