@@ -762,7 +762,7 @@ $(document).ready(function(){
     const rows = data.split('\n').slice(1);
     rows.forEach(elt=>{
       const row = elt.split(',');    
-      myLayers.push(clone({"vulnerability":row[0],"fraction":row[1] } ));
+      myLayers.push(clone({"vulnerability":row[0],"fraction":parseFloat(row[1]) } ));
     });
     
     globalLayers=myLayers;
@@ -1025,8 +1025,7 @@ async function plotLayers(){
     yData.push(globalLayers[i].fraction);
   }
   const colors=[];
-  const bgColors=[];
-  //console.log(xData,yData,globalLayers);  
+  const bgColors=[];  
   barChart("myVulnerabilityChart",xData,yData,colors,bgColors,"Vulnerability","Fraction of popl","Vulnerability of layers",true);
 }
 
@@ -1202,6 +1201,7 @@ async function plotLayers(){
   async function saveJSON(saveStepsId="saveSteps",saveConfigId="saveConfig"){
     await initialize();
     document.getElementById(saveStepsId).value = JSON.stringify(steps);
+    globalStageData["globalLayers"]=globalLayers;
     document.getElementById(saveConfigId).value = JSON.stringify(globalStageData);
   }
 
@@ -1218,6 +1218,9 @@ async function plotLayers(){
         globalStageData[key]=clone(loadedConfig[key]);
         console.log("loaded:",key);
         console.log(globalStageData[key]);
+      }
+      if (key=="globalLayers"){
+        globalLayers=clone(loadedConfig[key])
       }
     }
     
