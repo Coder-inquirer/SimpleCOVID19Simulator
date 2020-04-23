@@ -275,7 +275,18 @@
     -progression of stages, i.e. fraction of people in 
       each stage, n days after exposure 
   </pre></code>
-  
+  <br>
+  </p>
+  <p  class="text-left">
+  <b>Basic usage instructions:</b>
+  <br>
+  <ul class="text-left">
+    <li>Set the parameters as required</li>
+    <li>Press the 'Run' button to run the simulation from the beginning with the specified parameters</li>
+    <li>Press 'Continue' to continue the simulation with new parameters</li>
+    <li>The steps, that is the parameters of each run or continue step can be saved by copying the JSON array given in the Save modal</li>
+    <li>Custom steps and configuration(which includes the parameters plotted in graphs) can also be loaded from the Load modal.</li>
+  </ul>
   </p>
 </div>
 
@@ -395,6 +406,9 @@
             <div class="col-md-6">
               <canvas id="myQuarantineLockdownChart"></canvas>
             </div>
+          </div>
+          <div class="row text-center">
+            <canvas id="myVulnerabilityChart"></canvas>
           </div>
         </div>
       </div>
@@ -525,7 +539,7 @@ $(document).ready(function(){
   // PARAMETERS __________________________
   const N_HISTORY_DAYS = 14;
   const T_STEP = 1;
-  let BETA = 0.6172;
+  let BETA = 2.0;
   let SEED = 500;
 
   // GLOBAL VARIABLES ____________________
@@ -546,6 +560,7 @@ $(document).ready(function(){
   let globalStagesQuarantineFraction = null;
   let globalStagesInfectiousness = null;
   let globalStagesQuarantineFractionLockdown=null;
+  let globalLayers=null;
   let wards,layersData;
 
   let steps=[];
@@ -749,6 +764,8 @@ $(document).ready(function(){
       const row = elt.split(',');    
       myLayers.push(clone({"vulnerability":row[0],"fraction":row[1] } ));
     });
+    
+    globalLayers=myLayers;
     return myLayers;
   }
 
@@ -773,7 +790,7 @@ $(document).ready(function(){
       layersData = await getLayerData();
       progress.value=0.4;
       console.log("gotLayer");
-      globalStageData = await getStageData();
+      globalStageData = clone(await getStageData());
       console.log("gotStage");
     }
     progress.value=0.7;
@@ -943,7 +960,12 @@ $(document).ready(function(){
                     scaleLabel:{
                         display: true,
                         labelString: ylabel
+                    },
+                    ticks:{
+                      autoSkip:true,
+                      autoSkipPadding:2
                     }
+                    
                 }],
                 xAxes: [{
                     scaleLabel:{
@@ -956,8 +978,8 @@ $(document).ready(function(){
     });
   }
 
-  async function plotParams(){
-    fraction = await getStagesFractionChartData();
+  async function plotParams(loadData=true){
+    fraction = await getStagesFractionChartData(loadData);
     xData = fraction.xData;
     yData = fraction.yData;
     labels = fraction.labels;
@@ -968,8 +990,12 @@ $(document).ready(function(){
     chartIt(myProgressionChart,'myProgressionChart',xData,yData,labels,colors,bgColors,xlabel,ylabel,'Stage Progression Parameters',true,true);
   }
 
-  async function plotInfectiousnessEtc(){
-    globalStageData = await getStageData();
+  async function plotInfectiousnessEtc(loadData=true){
+    if (loadData==true){
+      globalStageData = await getStageData();
+      globalLayers = await getLayerData()
+    }
+    
     globalStagesInfectiousness = globalStageData.stagesInfectiousness;
     xData = [];
     yIData = [];
@@ -987,11 +1013,41 @@ $(document).ready(function(){
     barChart("myInfectiousnessChart",xData,yIData,colors,bgColors,xlabel,"Infectiousness","Infectiousness of stages");
     barChart("myQuarantineChart",xData,yQData,colors,bgColors,xlabel,"Percent isolation","Isolation practiced by stages");
     barChart("myQuarantineLockdownChart",xData,yQLData,colors,bgColors,xlabel,"Percent isolation","Isolation practiced by stages during Lockdown");
+    
+    await plotLayers();
   }
 
-  async function barChart(chartId,xData,yData,colors,bgColors,xlabel,ylabel,title){
+async function plotLayers(){
+  xData = [];
+  yData = [];
+  for (let i=0; i<globalLayers.length-1; i++){
+    xData.push(clone(globalLayers[i].vulnerability));
+    yData.push(globalLayers[i].fraction);
+  }
+  const colors=[];
+  const bgColors=[];
+  //console.log(xData,yData,globalLayers);  
+  barChart("myVulnerabilityChart",xData,yData,colors,bgColors,"Vulnerability","Fraction of popl","Vulnerability of layers",true);
+}
+
+  async function barChart(chartId,xData,yData,colors,bgColors,xlabel,ylabel,title,fitYAxis=false){
     let ctx = document.getElementById(chartId).getContext('2d');
-    
+    let myTicks=null;
+    if (fitYAxis==false){
+      myTicks={
+          max:1,
+          min:0,
+          autoSkip:true,
+          autoSkipPadding:2
+      }
+    }
+    else{
+      myTicks={
+          min:0,
+          autoSkip:true,
+          autoSkipPadding:2
+      }
+    }
     let myBarChart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -1019,12 +1075,7 @@ $(document).ready(function(){
                         display: true,
                         labelString: ylabel
                     },
-                    ticks:{
-                      max:1,
-                      min:0,
-                      autoSkip:true,
-                      autoSkipPadding:1
-                    }
+                    ticks:myTicks
                 }],
                 xAxes: [{
                     scaleLabel:{
@@ -1037,11 +1088,17 @@ $(document).ready(function(){
     });
   }
 
-  async function getStagesFractionChartData(){
+  async function getStagesFractionChartData(loadData=true){
     const xData=[1,2,3,4,5,6,7,8,9,10,11,12,13,14];
     const yData=[];
     const labels=[];
-    let responseJson = await getStageData();
+    
+    let responseJson;
+    if (loadData==true)
+      responseJson = await getStageData();
+    else
+      responseJson = globalStageData;
+      
     let stage_fractions_by_days=responseJson["stage_fractions_by_days"];
     //console.log(responseJson)
     console.log("getting fraction data");
@@ -1072,8 +1129,8 @@ $(document).ready(function(){
     return JSON.parse(JSON.stringify(obj));
   } 
 
-  function toRad(Value) {
-      /** Converts numeric degrees to radians */
+  function toRad(Value) {// Converts numeric degrees to radians
+      
       return Value * Math.PI / 180;
   }
 
@@ -1142,11 +1199,33 @@ $(document).ready(function(){
     await addStep();
   } 
 
-  async function saveJSON(saveStepsId="saveSteps"){
+  async function saveJSON(saveStepsId="saveSteps",saveConfigId="saveConfig"){
+    await initialize();
     document.getElementById(saveStepsId).value = JSON.stringify(steps);
+    document.getElementById(saveConfigId).value = JSON.stringify(globalStageData);
   }
 
-  async function loadJSON(loadStepsId="loadSteps"){
+  async function loadJSON(loadStepsId="loadSteps",loadConfigId="loadConfig"){ 
+    console.log("loadConfig");
+    console.log(document.getElementById(loadConfigId).value);
+    let loadedConfig=JSON.parse(document.getElementById(loadConfigId).value);
+    
+    await initialize();
+    runOnce=true;
+    
+    for (let key in loadedConfig){
+      if (globalStageData.hasOwnProperty(key)){
+        globalStageData[key]=clone(loadedConfig[key]);
+        console.log("loaded:",key);
+        console.log(globalStageData[key]);
+      }
+    }
+    
+    
+    await initialize(false);
+    await plotParams(false);
+    await plotInfectiousnessEtc(false);
+    
     console.log("loadSteps");
     let loadedSteps=JSON.parse(document.getElementById(loadStepsId).value);
     console.log(loadedSteps);
@@ -1163,7 +1242,6 @@ $(document).ready(function(){
       else
         await continueRun();
     }
-    
   }
 
   async function copyToClipboard(elementId){
