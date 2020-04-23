@@ -761,10 +761,11 @@ $(document).ready(function(){
     
     const rows = data.split('\n').slice(1);
     rows.forEach(elt=>{
-      const row = elt.split(',');    
-      myLayers.push(clone({"vulnerability":row[0],"fraction":parseFloat(row[1]) } ));
+      const row = elt.split(',');
+      if(row[0]!=null && row[1]!=null)
+        myLayers.push(clone({"vulnerability":row[0],"fraction":parseFloat(row[1]) } ));
     });
-    
+    //let dumpx=myLayers.pop(); //TEMPORARY, QUICK MEASURE TO CLEAN THE INPUT
     globalLayers=myLayers;
     return myLayers;
   }
@@ -792,6 +793,9 @@ $(document).ready(function(){
       console.log("gotLayer");
       globalStageData = clone(await getStageData());
       console.log("gotStage");
+    }
+    else{
+      layersData=globalLayers;
     }
     progress.value=0.7;
     globalStages = globalStageData.stages;
@@ -838,6 +842,7 @@ $(document).ready(function(){
   async function simulate(loadData=true,wannaInitialize=true){
     let t_0=0;
     if (wannaInitialize==true){
+      console.log("initializing");
       await initialize(loadData);
       t_0=0;
       myBlocks[0].exposeFew(SEED);
@@ -1017,17 +1022,17 @@ $(document).ready(function(){
     await plotLayers();
   }
 
-async function plotLayers(){
-  xData = [];
-  yData = [];
-  for (let i=0; i<globalLayers.length-1; i++){
-    xData.push(clone(globalLayers[i].vulnerability));
-    yData.push(globalLayers[i].fraction);
+  async function plotLayers(){
+    xData = [];
+    yData = [];
+    for (let i=0; i<globalLayers.length; i++){
+      xData.push(clone(globalLayers[i].vulnerability));
+      yData.push(globalLayers[i].fraction);
+    }
+    const colors=[];
+    const bgColors=[];  
+    barChart("myVulnerabilityChart",xData,yData,colors,bgColors,"Vulnerability","Fraction of popl","Vulnerability of layers",true);
   }
-  const colors=[];
-  const bgColors=[];  
-  barChart("myVulnerabilityChart",xData,yData,colors,bgColors,"Vulnerability","Fraction of popl","Vulnerability of layers",true);
-}
 
   async function barChart(chartId,xData,yData,colors,bgColors,xlabel,ylabel,title,fitYAxis=false){
     let ctx = document.getElementById(chartId).getContext('2d');
@@ -1220,7 +1225,8 @@ async function plotLayers(){
         console.log(globalStageData[key]);
       }
       if (key=="globalLayers"){
-        globalLayers=clone(loadedConfig[key])
+        console.log("globalLayers");
+        globalLayers=clone(loadedConfig[key]);
       }
     }
     
