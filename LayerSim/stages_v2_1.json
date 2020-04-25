@@ -1,27 +1,4 @@
-{
-  "stages":{
-    "E":{
-      "count":0,
-      "infectiousness":0.0,
-      "qaurantine_fraction":0
-    },
-    "A":{
-      "count":0,
-      "infectiousness":0.3,
-      "qaurantine_fraction":0
-    },
-    "I":{
-      "count":0,
-      "infectiousness":1,
-      "qaurantine_fraction":0
-    },
-    "R":{
-      "count":0,
-      "infectiousness":0,
-      "qaurantine_fraction":0
-    }
-  },
-  
+{  
   "stagesQuarantineFraction":{
     "E":0.3,
     "A":0.3,
@@ -43,6 +20,13 @@
     "R":0
   },
 
+  "stage_fractions_by_days":{
+    "E":[1.0,0.9,0.75,0.6,0.4,0.2,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+    "A":[0.0,0.1,0.15,0.2,0.3,0.4,0.45,0.4,0.35,0.3,0.25,0.2,0.1,0.0],
+    "I":[0.0,0.0,0.1,0.2,0.3,0.4,0.45,0.4,0.35,0.3,0.25,0.2,0.1,0.0],
+    "R":[0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.2,0.3,0.4,0.50,0.6,0.8,1.0]
+  },
+  
   "stagesCount":{
     "E":0,
     "A":0,
@@ -50,10 +34,26 @@
     "R":0
   },
   
-  "stage_fractions_by_days":{
-    "E":[1.0,0.9,0.75,0.6,0.4,0.2,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0],
-    "A":[0.0,0.1,0.15,0.2,0.3,0.4,0.45,0.4,0.35,0.3,0.25,0.2,0.1,0.0],
-    "I":[0.0,0.0,0.1,0.2,0.3,0.4,0.45,0.4,0.35,0.3,0.25,0.2,0.1,0.0],
-    "R":[0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.2,0.3,0.4,0.50,0.6,0.8,1.0]
+  "stages":{
+    "E":{
+      "count":0,
+      "infectiousness":0.0,
+      "qaurantine_fraction":0
+    },
+    "A":{
+      "count":0,
+      "infectiousness":0.3,
+      "qaurantine_fraction":0
+    },
+    "I":{
+      "count":0,
+      "infectiousness":1,
+      "qaurantine_fraction":0
+    },
+    "R":{
+      "count":0,
+      "infectiousness":0,
+      "qaurantine_fraction":0
+    }
   }
 }
