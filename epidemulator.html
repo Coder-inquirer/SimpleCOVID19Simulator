@@ -39,11 +39,6 @@
     padding: 0% 10%;
     width:100%;
   }
-  .container-vertical-padding {
-    padding: 0;
-    display: block !important;
-    width:100%;
-  }
   .person {
     border: 1% solid transparent;
     margin-bottom: 10%;
@@ -950,14 +945,38 @@ $(document).ready(function(){
     
     datasets=[];
     for (index in yData){
-      dataset = {
+      if(stacked==true){
+        if (index==0){
+          dataset = {
+            label: labels[index],
+            data: yData[index],
+            fill: 'bottom',
+            borderColor:colors[index],
+            backgroundColor:bgColors[index],
+            borderWidth: 1
+          };
+        }
+        else{
+          dataset = {
+            label: labels[index],
+            data: yData[index],
+            fill: '-1',
+            borderColor:colors[index],
+            backgroundColor:bgColors[index],
+            borderWidth: 1
+          };
+        }
+      }
+      else{
+        dataset = {
           label: labels[index],
           data: yData[index],
-          fill: stacked,
+          fill: false,
           borderColor:colors[index],
           backgroundColor:bgColors[index],
           borderWidth: 1
         };
+      }
       datasets.push(dataset);
     }
     
@@ -1009,8 +1028,8 @@ $(document).ready(function(){
     xData = fraction.xData;
     yData = fraction.yData;
     labels = fraction.labels;
-    const colors=['blue','yellow','red','green'];
-    const bgColors=['blue','yellow','red','green'];
+    const colors=['#536DFE','#fbc02d','#FF5722','#8BC34A'];//['blue','yellow','red','green'];
+    const bgColors=['rgba(0,0,255,0.5)','rgba(255,255,0,0.5)','rgba(255,0,0,0.5)','rgba(0,255,0,0.5)'];//['blue','yellow','red','green'];
     let xlabel = "Days since exposure";
     let ylabel = "Fraction of people in the stage";
     chartIt(myProgressionChart,'myProgressionChart',xData,yData,labels,colors,bgColors,xlabel,ylabel,'Stage Progression Parameters',true,true);
@@ -1033,8 +1052,8 @@ $(document).ready(function(){
       yQLData.push(parseFloat(globalStageData.stagesQuarantineFractionLockdown[stageName]));
       yQData.push(parseFloat(globalStageData.stagesQuarantineFraction[stageName]));
     }
-    const colors=['blue','yellow','red','green'];
-    const bgColors=['blue','yellow','red','green'];
+    const colors=['#536DFE','#fbc02d','#FF5722','#8BC34A'];
+    const bgColors=['rgba(0,0,255,0.5)','rgba(255,255,0,0.5)','rgba(255,0,0,0.5)','rgba(0,255,0,0.5)'];//['#536DFE','#fbc02d','#FF5722','#8BC34A'];//['blue','yellow','red','green'];
     let xlabel = "Stages";
     barChart("myInfectiousnessChart",xData,yIData,colors,bgColors,xlabel,"Infectiousness","Infectiousness of stages");
     barChart("myQuarantineChart",xData,yQData,colors,bgColors,xlabel,"Percent isolation","Isolation practiced by stages");
