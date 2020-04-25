@@ -23,6 +23,7 @@
   body {
     font: 400 15px/1.8 Lato, sans-serif;
     color: #777;
+    overflow-x:hidden;
   }
   h3, h4 {
     margin: 1% 0 3% 0;
@@ -36,6 +37,11 @@
   }
   .container-horizontal-padding {
     padding: 0% 10%;
+    width:100%;
+  }
+  .container-vertical-padding {
+    padding: 0;
+    display: block !important;
     width:100%;
   }
   .person {
@@ -100,29 +106,30 @@
     font-size: 11px !important;
     letter-spacing: 4px;
     opacity: 0.9;
+    margin: 0 auto;
   }
   .navbar li a, .navbar .navbar-brand { 
-    color: #d5d5d5;
+    color: #d5d5d5 !important;
   }
   .navbar-nav li a:hover {
-    color: #fff ;
+    color: #fff !important;
   }
   .navbar-nav li.active a {
-    color: #fff;
-    background-color: #29292c;
+    color: #fff !important;
+    background-color: #29292c !important;
   }
   .navbar-default .navbar-toggle {
     border-color: transparent;
   }
   .open .dropdown-toggle {
     color: #fff;
-    background-color: #555;
+    background-color: #555 !important;
   }
   .dropdown-menu li a {
-    color: #000 ;
+    color: #000 !important;
   }
   .dropdown-menu li a:hover {
-    background-color: red;
+    background-color: red !important;
   }
   .form-control {
     border-radius: 0;
