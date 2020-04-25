@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Epidemiological Simulator</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+  <script>
+    !function(a){var b="object"==typeof self&&self.self===self&&self||"object"==typeof global&&global.global===global&&global;"function"==typeof define&&define.amd?define(["exports"],function(c){b.ParticleNetwork=a(b,c)}):"object"==typeof module&&module.exports?module.exports=a(b,{}):b.ParticleNetwork=a(b,{})}(function(a,b){var c=function(a){this.canvas=a.canvas,this.g=a.g,this.particleColor=a.options.particleColor,this.x=Math.random()*this.canvas.width,this.y=Math.random()*this.canvas.height,this.velocity={x:(Math.random()-.5)*a.options.velocity,y:(Math.random()-.5)*a.options.velocity}};return c.prototype.update=function(){(this.x>this.canvas.width+20||this.x<-20)&&(this.velocity.x=-this.velocity.x),(this.y>this.canvas.height+20||this.y<-20)&&(this.velocity.y=-this.velocity.y),this.x+=this.velocity.x,this.y+=this.velocity.y},c.prototype.h=function(){this.g.beginPath(),this.g.fillStyle=this.particleColor,this.g.globalAlpha=.7,this.g.arc(this.x,this.y,1.5,0,2*Math.PI),this.g.fill()},b=function(a,b){this.i=a,this.i.size={width:this.i.offsetWidth,height:this.i.offsetHeight},b=void 0!==b?b:{},this.options={particleColor:void 0!==b.particleColor?b.particleColor:"#fff",background:void 0!==b.background?b.background:"#1a252f",interactive:void 0!==b.interactive?b.interactive:!0,velocity:this.setVelocity(b.speed),density:this.j(b.density)},this.init()},b.prototype.init=function(){if(this.k=document.createElement("div"),this.i.appendChild(this.k),this.l(this.k,{position:"absolute",top:0,left:0,bottom:0,right:0,"z-index":1}),/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(this.options.background))this.l(this.k,{background:this.options.background});else{if(!/\.(gif|jpg|jpeg|tiff|png)$/i.test(this.options.background))return console.error("Please specify a valid background image or hexadecimal color"),!1;this.l(this.k,{background:'url("'+this.options.background+'") no-repeat center',"background-size":"cover"})}if(!/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(this.options.particleColor))return console.error("Please specify a valid particleColor hexadecimal color"),!1;this.canvas=document.createElement("canvas"),this.i.appendChild(this.canvas),this.g=this.canvas.getContext("2d"),this.canvas.width=this.i.size.width,this.canvas.height=this.i.size.height,this.l(this.i,{position:"relative"}),this.l(this.canvas,{"z-index":"20",position:"relative"}),window.addEventListener("resize",function(){return this.i.offsetWidth===this.i.size.width&&this.i.offsetHeight===this.i.size.height?!1:(this.canvas.width=this.i.size.width=this.i.offsetWidth,this.canvas.height=this.i.size.height=this.i.offsetHeight,clearTimeout(this.m),void(this.m=setTimeout(function(){this.o=[];for(var a=0;a<this.canvas.width*this.canvas.height/this.options.density;a++)this.o.push(new c(this));this.options.interactive&&this.o.push(this.p),requestAnimationFrame(this.update.bind(this))}.bind(this),500)))}.bind(this)),this.o=[];for(var a=0;a<this.canvas.width*this.canvas.height/this.options.density;a++)this.o.push(new c(this));this.options.interactive&&(this.p=new c(this),this.p.velocity={x:0,y:0},this.o.push(this.p),this.canvas.addEventListener("mousemove",function(a){this.p.x=a.clientX-this.canvas.offsetLeft,this.p.y=a.clientY-this.canvas.offsetTop}.bind(this)),this.canvas.addEventListener("mouseup",function(a){this.p.velocity={x:(Math.random()-.5)*this.options.velocity,y:(Math.random()-.5)*this.options.velocity},this.p=new c(this),this.p.velocity={x:0,y:0},this.o.push(this.p)}.bind(this))),requestAnimationFrame(this.update.bind(this))},b.prototype.update=function(){this.g.clearRect(0,0,this.canvas.width,this.canvas.height),this.g.globalAlpha=1;for(var a=0;a<this.o.length;a++){this.o[a].update(),this.o[a].h();for(var b=this.o.length-1;b>a;b--){var c=Math.sqrt(Math.pow(this.o[a].x-this.o[b].x,2)+Math.pow(this.o[a].y-this.o[b].y,2));c>120||(this.g.beginPath(),this.g.strokeStyle=this.options.particleColor,this.g.globalAlpha=(120-c)/120,this.g.lineWidth=.7,this.g.moveTo(this.o[a].x,this.o[a].y),this.g.lineTo(this.o[b].x,this.o[b].y),this.g.stroke())}}0!==this.options.velocity&&requestAnimationFrame(this.update.bind(this))},b.prototype.setVelocity=function(a){return"fastest"===a?4:"faster"===a?2:"fast"===a?1:"slow"===a?.33:"none"===a?0:.66},b.prototype.j=function(a){return"high"===a?5e3:"low"===a?2e4:isNaN(parseInt(a,10))?1e4:a},b.prototype.l=function(a,b){for(var c in b)a.style[c]=b[c]},b});
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+  <style>
+  body {
+    font: 400 15px/1.8 Lato, sans-serif;
+    color: #777;
+  }
+  h3, h4 {
+    margin: 10px 0 30px 0;
+    letter-spacing: 10px;      
+    font-size: 20px;
+    color: #111;
+  }
+  .container {
+    padding: 80px 120px;
+    width:100%;
+  }
+  .container-horizontal-padding {
+    padding: 0% 10%;
+    width:100%;
+  }
+  .person {
+    border: 10px solid transparent;
+    margin-bottom: 25px;
+    width: 80%;
+    height: 80%;
+    opacity: 0.7;
+  }
+  .person:hover {
+    border-color: #f1f1f1;
+  }
+  .carousel-inner img {
+    -webkit-filter: grayscale(90%);
+    filter: grayscale(90%); /* make all photos black and white */ 
+    width: 100%; /* Set width to 100% */
+    margin: auto;
+  }
+  .carousel-caption h3 {
+    color: #fff !important;
+  }
+  @media (max-width: 600px) {
+    .carousel-caption {
+      display: none; /* Hide the carousel text when the screen is less than 600 pixels wide */
+    }
+  }
+  .bg-1 {
+    background: #2d2d30;
+    color: #bdbdbd;
+  }
+  .bg-1 h3 {color: #fff;}
+  .bg-1 p {font-style: italic;}
+  .list-group-item:first-child {
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+  }
+  .jumbotron {
+      width:100%;
+      background-color: #2d2d30;
+      color: #fff;
+      padding: 100px 0px;
+      font-family: Montserrat, sans-serif;
+  }
+  .list-group-item:last-child {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  .thumbnail {
+    padding: 0 0 15px 0;
+    border: none;
+    border-radius: 0;
+  }
+  .thumbnail p {
+    margin-top: 15px;
+    color: #555;
+  }
+  .btn {
+    background-color: #333;
+    color: #f1f1f1;
+    border-radius: 0;
+    transition: .2s;
+  }
+  .btn:hover, .btn:focus {
+    border: 1px solid #333;
+    background-color: #fff;
+    color: #000;
+  }
+  .modal-header, h4, .close {
+    background-color: #333;
+    color: #fff !important;
+    text-align: center;
+    font-size: 30px;
+  }
+  .modal-header, .modal-body {
+    padding: 40px 50px;
+  }
+  .nav-tabs li a {
+    color: #777;
+  }
+  #googleMap {
+    width: 100%;
+    height: 400px;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+  }  
+  .navbar {
+    font-family: Montserrat, sans-serif;
+    margin-bottom: 0;
+    background-color: #2d2d30;
+    border: 0;
+    font-size: 11px !important;
+    letter-spacing: 4px;
+    opacity: 0.9;
+  }
+  .navbar li a, .navbar .navbar-brand { 
+    color: #d5d5d5 !important;
+  }
+  .navbar-nav li a:hover {
+    color: #fff !important;
+  }
+  .navbar-nav li.active a {
+    color: #fff !important;
+    background-color: #29292c !important;
+  }
+  .navbar-default .navbar-toggle {
+    border-color: transparent;
+  }
+  .open .dropdown-toggle {
+    color: #fff;
+    background-color: #555 !important;
+  }
+  .dropdown-menu li a {
+    color: #000 !important;
+  }
+  .dropdown-menu li a:hover {
+    background-color: red !important;
+  }
+  
+  footer {
+    background-color: #2d2d30;
+    color: #f5f5f5;
+    padding: 32px;
+  }
+  footer a {
+    color: #f5f5f5;
+  }
+  footer a:hover {
+    color: #777;
+    text-decoration: none;
+  }  
+  .form-control {
+    border-radius: 0;
+  }
+  textarea {
+    resize: none;
+  }
+  q {
+    font-family: "Times New Roman", Times, serif;
+    font-style: italic;
+  }
+
+
+  </style>
+</head>
+
+<body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="50">
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#myPage" id="myLogo">EPIDEMULATOR</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li class="active"><a href="#myPage">HOME</a></li>
+        <li class="active"><a href="#info">THEORY</a></li>
+        <li class="active"><a href="#charts">CHARTS</a></li>
+        <li class="active"><a href="#params">PARAMETERS</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div id="particle-canvas" class="jumbotron container-horizontal-padding"></div>
+	<!--script type="text/javascript" src=".\particle-network.min.js"></script-->
+  
+	<script type="text/javascript">
+	  var options = {
+	    particleColor: '#afafa0',
+	    background: '#2d2d30',
+	    interactive: true,
+	    speed: 'faster',
+	    density: 'high'
+      };
+      var particleCanvas = new ParticleNetwork(document.getElementById('particle-canvas'), options);
+	</script>
+  
+  <div class="jumbotron text-center" style="width:100%; position:absolute; top:0; right:0; left:0; z-index:10;">
+  <h1>EPIDEMULATOR</h1> 
+  <p>A lightweight generalized epidemic simulator written in Javascript.</p> 
+  </div>
+
+ 
+</div>
+
+
+<!-- Container (The Band Section) -->
+<div id="info" class="container text-center">
+  <h3>EPIDEMIOLOGICAL SIMULATOR</h3>
+  <p class="text-center"><q>...all models are approximations. <br>Essentially, all models are wrong, but some are useful.<br> However, the approximate nature of the model must always be borne in mind...</q><br> — George P. Box</p>
+  <p class="text-left">
+    <br>
+    This page showcases a general epidemiological simulator written in Javascript. <br>
+    Here, the city is Delhi and the blocks represent the electoral wards in Delhi. <br>
+    The susceptibility data in the default configuration is taken from distribution of number of interaction person-to person interactions as calculated for Delhi in a paper(provide link to paper).<br>
+    The formulae used in the computation are the following:<br>
+    \begin{align}
+     \frac{dE_i}{dt}&=force_i*S_i*\mathit{susceptibility}_i \\\\
+     S_i &= N_i - \sum_{stages} N_{stage,i} \\
+     force_i &= \beta*\sum_{j=1}^{N_{layers}} \left( \mathcal{I}_j/N_j * Adj_{i,j} \right) \\
+     \mathcal{I_i} &= \sum_{stages} N_{stage,i}*\mathit{Infectiousness}_{stage}*\left(1-\mathit{quarantineFraction_{stage}}\right) \\
+     N_{stage,i} &= \sum_{history} \mathit{fractionInStage}_{stage,day} * {\Delta E}_{i,day} 
+    \end{align}
+    <br>
+    where<br>
+    \(S_i\) : number of susceptible people in the \(i^{th}\) layer<br>
+    \(N_i\) : total number of people in the \(i^{th}\) layer<br>
+    \(N_{stage,i}\) : number of people in stage \(stage\) in the \(i^{th}\) layer<br>
+    The sum \(\sum_{j=1}^{N_{layers}}\) is over all layers in the city<br>
+    \(Adj_{i,j} = (\textit{Adjacency factor})/(\textit{distance in km})_{i,j} \) : represents the matrix of coupling between the infectiousness of layer \(j\) and the force of infectiousness on layer \(i\)<br>
+    \({\Delta E}_{i,day} \) : the number of people exposed in layer \(i\) on day '\(day\)'<br>
+    <br>
+    The structure of the model used by this simulator is as follows: 
+  <code><pre class="text-left">
+  
+    -City (an array of Blocks)
+    -|
+    -|-Block (collection of Layers)
+    ---|
+    ---|-Layer (smallest unit of population with certain common characteristics)
+    -----|
+    -----|-susceptibility
+    -----|-total number of people
+    -----|-number of susceptible
+    -----|-number of people in various stages like: exposed, asymptomatic, infected, recovered
+             is calculated from a running history of number of people exposed each day
+             
+    Global parameters:
+    ==================
+    -infectiousness of each stage
+    -isolation practiced by people in each stage
+    -progression of stages, i.e. fraction of people in 
+      each stage, n days after exposure 
+  </pre></code>
+  <br>
+  </p>
+  <p  class="text-left">
+  <b>Basic usage instructions:</b>
+  <br>
+  <ul class="text-left">
+    <li>Set the parameters as required</li>
+    <li>Press the 'Run' button to run the simulation from the beginning with the specified parameters</li>
+    <li>Press 'Continue' to continue the simulation with new parameters</li>
+    <li>The steps, that is the parameters of each run or continue step can be saved by copying the JSON array given in the Save modal</li>
+    <li>Custom steps and configuration(which includes the parameters plotted in graphs) can also be loaded from the Load modal.</li>
+    <li>Stochastic discretization can be checked to add stochasticity to infection of people.</li>
+  </ul>
+  </p>
+</div>
+
+
+<div id="charts" class="container text-center">
+  <h3 class="text-center">CHARTS</h3>
+  <div class="card text-center container-horizontal-padding">
+    <div class="card-header" id="cardChart" style="display:none"> 
+      <ul class="tab nav nav-tabs card-header pull-left"  id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link" id="logarithmic-tab" data-toggle="tab" href="#logarithmic" role="tab" aria-controls="logarithmic" aria-selected="true">logarithmic</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="linear-tab" data-toggle="tab" href="#linear" role="tab" aria-controls="linear" aria-selected="false">linear</a>
+        </li>
+      </ul>
+    </div>
+    <br>
+    <div class="card-body">
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade" id="logarithmic" role="tabpanel" aria-labelledby="logarithmic-tab">
+          <canvas id="myChart"></canvas>
+        </div>
+        <div class="tab-pane fade" id="linear" role="tabpanel" aria-labelledby="linear-tab">
+          <canvas id="myChartLinear"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <progress id="myProgressBar" max="1" value="0" style="width: 100%"></progress>
+  <div class="row text-center">
+    <div class="row">
+      <div class="col-sm-4">
+        <canvas id="mySChart"></canvas>
+      </div>
+      <div class="col-sm-4">
+        <canvas id="myIChart"></canvas>
+      </div>
+      <div class="col-sm-4">
+        <canvas id="myRChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <br>
+  <button class="btn" id="rerun" onclick="run()">Run</button>
+  <button class="btn" id="continueRun" onclick="continueRun()">Continue run</button>
+</div>
+
+
+<!-- Container (PARAMS Section) -->
+<div id="params" class="text-center">
+  <div class="container">
+    <h3 class="text-center">PARAMETERS</h3>
+    
+    <div class="row text-center">
+      <div class="col-sm-4">
+        <div class="text-left">
+          <br><br>
+          <code>
+          <div class="row">
+            <div class="col-sm-8">No. of Days : </div>
+            <div class="col-sm-4">
+              <input type="text" class="form-control form-control-sm" value="500" id="nDaysDisplay" onchange="paramChanged()">
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-sm-8">Seed exposed : </div>
+            <div class="col-sm-4">
+              <input type="text" class="form-control form-control-sm" value="0.617" id="seedDisplay" onchange="paramChanged()">
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-sm-8">Beta : </div>
+            <div class="col-sm-4">
+              <input type="text" class="form-control form-control-sm" value="0.617" id="betaDisplay" onchange="paramChanged()">
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-sm-8">Adjacency factor : </div>
+            <div class="col-sm-4">
+              <input type="text" class="form-control form-control-sm" value="0.617" id="factorODDisplay" onchange="paramChanged()">
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-sm-8">Lockdown Triggering :
+            </div> 
+            <div class="col-sm-4 text-center">
+              <input id="triggeringCheckbox" type="checkbox" class="form-check-input" checked onchange="paramChanged()">
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-sm-8">Trigger On :<br>(active cases more than)
+            </div>
+            <div class="col-sm-4">
+              <input type="text" class="form-control form-control-sm" value="1000" id="triggerOnDisplay" onchange="paramChanged()">
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-sm-8">Trigger Off :<br>(active cases less than)
+            </div>
+            <div class="col-sm-4">
+              <input type="text" class="form-control form-control-sm" value="50" id="triggerOffDisplay" onchange="paramChanged()">
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-sm-8">Stochastic discretization :
+            </div> 
+            <div class="col-sm-4 text-center">
+              <input id="discretizingCheckbox" type="checkbox" class="form-check-input" checked onchange="paramChanged()">
+            </div>
+          </div>
+          <br>
+          </code>
+          <div class="row text-center">
+            <button class="btn" data-toggle="modal" data-target="#myLoadModal">Load JSON data</button>
+            <button class="btn" data-toggle="modal" data-target="#mySaveModal" onclick="saveJSON()">Save JSON data</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-sm-8">
+        <div id="params" class="container-horizontal-padding text-center">
+          <div class="row text-center">
+            <canvas id="myProgressionChart"></canvas>
+          </div>
+          <div class="row text-center">
+            <canvas id="myInfectiousnessChart"></canvas>
+          </div>
+          <div class="row text-center">
+            <div class="col-md-6">
+              <canvas id="myQuarantineChart"></canvas>
+            </div>
+            <div class="col-md-6">
+              <canvas id="myQuarantineLockdownChart"></canvas>
+            </div>
+          </div>
+          <div class="row text-center">
+            <canvas id="myVulnerabilityChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <!-- Load Modal -->
+  <div class="modal fade" id="myLoadModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h4>Load data</h4>
+        </div>
+        <div class="modal-body">
+          
+            <div class="form-group">
+              <label for="loadConfig"> Paste configuration data </label>
+              <input type="text" class="form-control" id="loadConfig" placeholder="JSON data">
+            </div>
+            <div class="form-group">
+              <label for="loadSteps"> Paste Steps data </label>
+              <input type="text" class="form-control" id="loadSteps" placeholder="JSON data">
+            </div>
+              <button class="btn btn-block"  onclick="loadJSON()" data-dismiss="modal">Load</button>
+          
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger btn-default pull-left" data-dismiss="modal">Cancel</button>
+          <p>Need <a href="https://en.wikipedia.org/wiki/JSON#Data_types_and_syntax" target="_blank">help?</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Save Modal -->
+  <div class="modal fade" id="mySaveModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h4>Save data</h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label for="loadConfig"> Copy configuration data </label>
+              <input type="text" class="form-control" id="saveConfig" placeholder="JSON data">
+            </div>
+            <div class="form-group">
+              <label for="loadSteps"> Copy Steps data </label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="saveSteps" placeholder="JSON data">
+                <div class="input-group-btn">
+                  <button class="btn btn-default" type="button" onclick="copyToClipboard('saveSteps')">Copy</button>
+                </div>
+              </div>
+            </div>
+          </form>
+          
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger btn-default pull-left" data-dismiss="modal">Cancel</button>
+          <p>Need <a href="https://en.wikipedia.org/wiki/JSON#Data_types_and_syntax" target="_blank">help?</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+
+<!-- Footer 
+<footer class="text-center">
+  <a class="up-arrow" href="#myPage" data-toggle="tooltip" title="" data-original-title="TO TOP">
+    <span class="glyphicon glyphicon-chevron-up"></span>
+  </a><br><br>
+</footer>
+-->
+<script>
+$(document).ready(function(){
+  // Initialize Tooltip
+  $('[data-toggle="tooltip"]').tooltip(); 
+  
+  // Add smooth scrolling to all links in navbar + footer link
+  $(".navbar a, footer a[href='#myPage']").on('click', function(event) {
+
+    // Prevent default anchor click behavior
+    event.preventDefault();
+
+    // Store hash
+    var hash = this.hash;
+
+    // Using jQuery's animate() method to add smooth page scroll
+    // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
+    $('html, body').animate({
+      scrollTop: $(hash).offset().top
+    }, 900, function(){
+   
+      // Add hash (#) to URL when done scrolling (default click behavior)
+      window.location.hash = hash;
+    });
+  });
+})
+</script>
+<script>
+  //plot_layer_script.js
+  /*
+  Use stages_v2.json for this version
+    Block
+    |
+    |>Layer
+      |
+      |>N
+      |>susc
+      |>S (Remember: 'S' is not a stage)
+      |>stagesCount (Json object)
+        |
+        |>StageName (e.g. E,I,Q,R,Asym etc.)
+
+  */
+
+  // PARAMETERS _________________________________________________________
+  const N_HISTORY_DAYS = 14;
+  const T_STEP = 1;
+  let BETA = 7.2;
+  let SEED = 5;
+  let factorOD = 0.01;
+  let maxDistance=100;
+  
+  let nDays = 60;
+  let triggering = true;
+  let lockdownOnTrigger = 30;
+  let lockdownOffTrigger = 20;
+  let discretizing = true;
+  let levelsN = [1.0,4.0,250.0]; //individual,family,locality
+  let levelsP = [0.65,0.3,0.05];
+
+  // GLOBAL VARIABLES ___________________________________________________
+
+  let myLayers = [];
+  let myBlocks = [];
+  let adj=[];
+
+  let xData=[];
+  let ySData=[];
+  let yIData=[];
+  let yRData=[];
+
+  let globalStageData=null;
+  let globalStages=null;
+  let globalStage_fractions_by_days=null;
+  let globalStagesCount = null;
+  let globalStagesQuarantineFraction = null;
+  let globalStagesInfectiousness = null;
+  let globalStagesQuarantineFractionLockdown=null;
+  let globalLayers=null;
+  let wards,layersData;
+
+  let steps=[];
+  let config=[];
+
+  let progress = document.getElementById('myProgressBar');
+
+  let mySIRChart=null,mySChart=null,myIChart=null,myRChart=null,myProgressionChart=null;
+  let triggeringCheckbox = document.getElementById('triggeringCheckbox');
+  let triggerOnDisplay   = document.getElementById('triggerOnDisplay');
+  let triggerOffDisplay  = document.getElementById('triggerOffDisplay');
+  let nDaysDisplay       = document.getElementById('nDaysDisplay');
+  let betaDisplay        = document.getElementById('betaDisplay');
+  let seedDisplay        = document.getElementById('seedDisplay');
+  let factorODDisplay    = document.getElementById('factorODDisplay');
+  let discretizingCheckbox= document.getElementById('discretizingCheckbox');
+  let myLogo = document.getElementById('myLogo');
+  let runOnce=false;
+
+  nDaysDisplay.value = nDays;
+  betaDisplay.value=BETA;
+  triggerOffDisplay.value=lockdownOffTrigger;
+  triggerOnDisplay.value=lockdownOnTrigger;
+  seedDisplay.value=SEED;
+  factorODDisplay.value=factorOD;
+  discretizingCheckbox.checked=discretizing;
+
+
+  //triggering = triggeringCheckbox.value;
+
+  // CLASSES _____________________________
+
+  class Layer{
+    
+    constructor(N=100,susc=0.62,E=0.0,stages=globalStagesCount){
+      this.N=Math.floor(N);
+      this.susc=susc;
+      this.S = Math.floor(clone(this.N))||0;
+      this.R = 0;
+      this.stages=clone(stages);
+      for(let stageName in this.stages){
+        this.stages[stageName]=0.0;
+      }
+      this.historyDays=[0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+      this.infectiousness=1;
+      this.exposeFew(E);
+    }
+    
+    updateExpose(force){
+      let newExposed = (force*this.susc*this.S);
+      if (discretizing==true){
+        let newerExposed=0.0;
+        for (let level in levelsN){
+          //console.log(level,levelsN[level],levelsP[level]);
+          let number = levelsP[level]*newExposed/levelsN[level];
+          newerExposed += Math.floor(number) * levelsN[level];
+          if(Math.random()<number-Math.floor(number))
+            newerExposed += levelsN[level];
+        }
+        newExposed = clone(newerExposed);        
+      }
+      newExposed = Math.min(newExposed,this.S);
+      this.historyPush(newExposed);
+    }
+    
+    historyPush(newExposed) {
+      for(let stageName in this.stages){
+        this.stages[stageName]=0;
+      }
+      
+      let popped=this.historyDays.pop(); //Pop the last element from historyDays
+      
+      let pushed = newExposed;
+      this.S -= pushed;
+      this.historyDays.unshift(pushed);  //Push a new element into historyDays
+      
+      for(let i in this.historyDays){
+        for(let stageName in this.stages){
+          this.stages[stageName] += this.historyDays[i] * globalStage_fractions_by_days[stageName][i];
+        }
+      }
+      
+      let sum=0;
+      for (let stageName in this.stages){
+        sum += parseFloat(this.stages[stageName]);
+      }
+      
+      this.stages.R = this.N - this.S - sum + parseFloat(this.stages['R']);
+      this.R = parseFloat(this.stages.R);
+      
+      let inf=0;
+      for(let stageName in this.stages){
+        inf += this.stages[stageName] * globalStagesInfectiousness[stageName] * (1.0-globalStagesQuarantineFraction[stageName]);
+      }
+      this.infectiousness=inf;
+    }
+    
+    update() { //legacy function, deprecated
+      for(let stageName in this.stages){
+        this.stages[stageName]=0;
+      }
+      
+      let popped=this.historyDays.pop(); //Pop the last element from historyDays
+      //this.stages.R.count+=popped;
+      
+      let pushed = this.susc * this.S * this.activation;
+      this.S -= pushed;
+      this.historyDays.unshift(pushed);  //Push a new element into historyDays
+      
+      for(let i in this.historyDays){
+        for(let stageName in this.stages){
+          this.stages[stageName] += this.historyDays[i] * globalStage_fractions_by_days[stageName][i];
+        }
+      }
+      
+      let sum=0;
+      for (let stageName in this.stages){
+        sum += parseFloat(this.stages[stageName]);
+      }
+      
+      this.stages.R = this.N - this.S - sum + parseFloat(this.stages["R"]);
+      //console.log(this.N,this.S,sum-this.stages.R.count,this.stages.R.count);
+      
+      let inf=0;
+      for(let stageName in this.stages){
+        inf += this.stages[stageName] * globalStagesInfectiousness[stageName] * (1.0-globalStagesQuarantineFraction[stageName]);
+      }
+      this.infectiousness=inf;
+    }
+    
+    exposeFew(newExposed){
+      //this.stages['E'] += newExposed;
+      this.S -= newExposed;
+      this.historyPush(newExposed);
+    }
+  }
+
+
+  class Block{
+    
+    constructor(myLayers=[],id="None",stages=globalStagesCount){
+      this.blockLayers = myLayers;
+      this.id=id;
+      this.N=0;
+      this.S=0;
+      this.I=0;
+      this.R=0;
+      this.activation  = 0;
+      this.infectiousness=0;
+      this.stages = clone(stages);
+      this.calibrateUpwards();
+    }
+    
+    calibrateUpwards(){
+      this.N=0;
+      this.S=0;
+      this.I=0;
+      this.R=0;
+      this.infectiousness=0;
+      this.stages=clone(globalStagesCount);
+      for(let i in this.blockLayers){
+        this.N += this.blockLayers[i].N;
+        this.S += this.blockLayers[i].S;
+        this.R += this.blockLayers[i].R;
+        this.infectiousness+=parseFloat(this.blockLayers[i].infectiousness);
+        for (let stageName in this.stages){
+          this.stages[stageName] += this.blockLayers[i].stages[stageName];
+        }
+      }
+      this.I = this.N - this.S - this.R;
+    }
+    
+    updateExpose(force){
+      for (let index in this.blockLayers){
+        this.blockLayers[index].updateExpose(force);
+      }
+      this.calibrateUpwards();
+    }
+    
+    exposeFew(newExposed){
+      this.blockLayers[0].exposeFew(newExposed);
+      this.calibrateUpwards();
+    }
+    
+  }
+
+
+  async function getWardData(){
+    let wards=[];
+    const response = await fetch('https://raw.githubusercontent.com/Coder-inquirer/SimpleCOVID19Simulator/master/LayerSim/delhi_lat_lon_popl.csv');
+    const data = await response.text();
+    //console.log(data);
+    const rows = data.split('\n').slice(1);
+    rows.forEach(elt=>{
+      const row = elt.split(',');
+      const id = row[0];
+      const lon=row[1];
+      const lat=row[2];
+      const popl=row[3];
+      //console.log(id,lon,lat,popl);
+      wards.push(clone({"id":id,"lon":lon,"lat":lat,"popl":popl}));
+    });
+    return wards;
+  }
+
+  async function getLayerData(){
+    let myLayers=[];
+    const response = await fetch('https://raw.githubusercontent.com/Coder-inquirer/SimpleCOVID19Simulator/master/LayerSim/vulnerability_delhi.csv');
+    const data = await response.text();
+    
+    const rows = data.split('\n').slice(1);
+    rows.forEach(elt=>{
+      const row = elt.split(',');
+      if(row[0]!=null && row[1]!=null)
+        myLayers.push(clone({"vulnerability":row[0],"fraction":parseFloat(row[1]) } ));
+    });
+    //let dumpx=myLayers.pop(); //TEMPORARY, QUICK MEASURE TO CLEAN THE INPUT
+    globalLayers=myLayers;
+    return myLayers;
+  }
+
+  function createNewBlock(N,id,layersData){
+    let myLayers=[];
+    for(let i=0; i<layersData.length-1; i++){
+      if(layersData[i]!=null){
+        let myLayer = new Layer(Math.floor(layersData[i].fraction*N),
+                                BETA*layersData[i].vulnerability);
+        myLayers.push(myLayer);
+      }
+    }
+    let myBlock=new Block(myLayers,id);
+    return myBlock;
+  }
+
+  async function initialize(loadData=true){
+    progress.value=0.1;
+    if (loadData==true){
+      wards = await getWardData();
+      progress.value=0.3;
+      layersData = await getLayerData();
+      progress.value=0.4;
+      console.log("gotLayer");
+      globalStageData = clone(await getStageData());
+      console.log("gotStage");
+    }
+    else{
+      layersData=globalLayers;
+    }
+    progress.value=0.7;
+    globalStages = globalStageData.stages;
+    globalStage_fractions_by_days = globalStageData.stage_fractions_by_days;
+    globalStagesCount = clone(globalStageData.stagesCount);
+    globalStagesQuarantineFraction = clone(globalStageData.stagesQuarantineFraction);
+    globalStagesQuarantineFractionLockdown = clone(globalStageData.stagesQuarantineFractionLockdown);
+    globalStagesInfectiousness = clone(globalStageData.stagesInfectiousness);
+    
+    
+    myLayers = [];
+    myBlocks = [];
+    adj=[];
+    
+    for(let i=0; i<wards.length-1; i++){
+      //progress.value=(i+1)/wards.length;
+      if(wards[i]!=null){
+        //let myBlock=createNewBlock(parseFloat(wards[i]['popl']),layersData);
+        myBlocks.push(createNewBlock(parseFloat(wards[i]['popl']),id=wards[i]['id'],layersData));
+      }
+      
+      adj.push([]);
+      for(let j=0; j<wards.length-1; j++){
+        if (i==j){
+          adj[i].push(1);
+        }
+        else{
+          dist = haversine(wards[i]['lon'],wards[i]['lat'],wards[j]['lon'],wards[j]['lat']);
+          if (dist<maxDistance)
+            adj[i].push(factorOD/dist);
+          else
+            adj[i].push(0);
+        }
+      }
+    }
+    progress.value=0.6;
+    
+    xData=[];
+    ySData=[];
+    yIData=[];
+    yRData=[];
+  }
+
+  async function simulate(loadData=true,wannaInitialize=true){
+    let t_0=0;
+    if (wannaInitialize==true){
+      console.log("initializing");
+      await initialize(loadData);
+      t_0=0;
+      myBlocks[0].exposeFew(SEED);
+    }
+    else{
+      t_0 = 1+xData[xData.length-1];
+    }
+
+    
+    
+    for(let i=0; i<nDays; i++){
+      //console.log(i+t_0);
+      
+      //Check lockdown state
+      let yI=0;
+      if (i==0)
+        yI=SEED;
+      else
+        yI=yIData[yIData.length-1];
+      triggering = triggeringCheckbox.checked;
+      if (triggering==true){
+        if (yI>lockdownOnTrigger){ 
+          globalStagesQuarantineFraction = clone(globalStageData.stagesQuarantineFractionLockdown);
+        }
+        else if(yI<=lockdownOffTrigger){
+          globalStagesQuarantineFraction = clone(globalStageData.stagesQuarantineFraction);
+        }
+      }
+      
+      progress.value=(i)/nDays;
+      let yS=0;
+      yI=0;
+      let yR=0;
+      
+      for (let j in myBlocks){
+        myBlocks[j].activation=0;
+        for (k in myBlocks){
+          if (adj[j][k]!=0){
+            //myBlocks[j].activation += parseFloat(myBlocks[k].I/myBlocks[k].N) * adj[j][k];
+            myBlocks[j].activation += myBlocks[k].infectiousness/myBlocks[k].N * adj[j][k];
+          }
+        }
+      }
+      
+      //let j=0;
+      for (let j in myBlocks){
+        myBlocks[j].updateExpose(myBlocks[j].activation);
+        yS+=myBlocks[j].S;
+        yI+=myBlocks[j].N-myBlocks[j].S-myBlocks[j].R;
+        yR+=myBlocks[j].R;
+      }
+      
+      xData.push(i+t_0);
+      ySData.push(yS);
+      yIData.push(yI);
+      yRData.push(yR);
+    }
+    
+    //const colors=['blue','red','green'];
+    const colors=['#536DFE',
+                  '#FF5722',
+                  '#8BC34A'
+                  ]; 
+    const bgColors=['rgba(0,0,255,0.5)',
+                    'rgba(255,0,0,0.5)',
+                    'rgba(0,255,0,0.5)'
+                   ];
+                   
+    let xlabel = "Days";
+    let ylabel = "Number of people";
+    chartIt(mySIRChart,'myChart',xData,[ySData,yIData,yRData],["S","I","R"],colors,bgColors,xlabel,ylabel,'SIR Simulation',true,false,'logarithmic');
+    chartIt(mySIRChart,'myChartLinear',xData,[ySData,yIData,yRData],["S","I","R"],colors,bgColors,xlabel,ylabel,'SIR Simulation',true,false,'linear');
+    chartIt(mySChart,'mySChart',xData,[ySData],["S"],[colors[0]],[bgColors[0]],xlabel,ylabel,'Susceptible');
+    chartIt(myIChart,'myIChart',xData,[yIData],["I"],[colors[1]],[bgColors[1]],xlabel,ylabel,'Infectious');
+    chartIt(myRChart,'myRChart',xData,[yRData],["R"],[colors[2]],[bgColors[2]],xlabel,ylabel,'Recovered');
+    progress.style="width:0%";    //QUICK AND DIRTY
+    console.log(myBlocks[0]);
+    
+    let rerunBtn = document.getElementById("rerun");
+    rerunBtn.style.display = "inline";
+    myLogo = document.getElementById('myLogo');
+    myLogo.innerHTML = "EPIDEMULATOR";
+  }
+
+  async function chartIt(myChart,chartId,xData,yData,labels,colors,bgColors,xlabel,ylabel,title,legendDisplay=false,stacked=false,yType='linear'){ // data format:  xData=[x1,x2,...], yData=[[y11,y12,...],[y21,y22,...],...], labels=[l1,l2,...]
+    
+    let canvas = document.getElementById(chartId);
+    let ctx = document.getElementById(chartId).getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    
+    Chart.defaults.global.elements.line.borderWidth = 10;
+    //Chart.defaults.global.elements.point.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+    
+    datasets=[];
+    for (index in yData){
+      dataset = {
+          label: labels[index],
+          data: yData[index],
+          fill: stacked,
+          borderColor:colors[index],
+          backgroundColor:bgColors[index],
+          borderWidth: 1
+        };
+      datasets.push(dataset);
+    }
+    
+    myChart=null;
+    
+    myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+            labels: xData,
+            datasets: datasets
+            },
+        options: {
+            legend:{
+              display: legendDisplay
+            },
+            responsive: true,
+            //maintainAspectRatio: false,
+            title: {
+                display: true,
+                text: title
+            },
+            scales: {
+                yAxes: [{
+                    type: yType,
+                    stacked: stacked,
+                    scaleLabel:{
+                        display: true,
+                        labelString: ylabel
+                    },
+                    ticks:{
+                      autoSkip:true,
+                      autoSkipPadding:2
+                    }
+                    
+                }],
+                xAxes: [{
+                    scaleLabel:{
+                        display: true,
+                        labelString: xlabel
+                    }
+                }]
+            }
+        }
+    });
+  }
+
+  async function plotParams(loadData=true){
+    fraction = await getStagesFractionChartData(loadData);
+    xData = fraction.xData;
+    yData = fraction.yData;
+    labels = fraction.labels;
+    const colors=['blue','yellow','red','green'];
+    const bgColors=['blue','yellow','red','green'];
+    let xlabel = "Days since exposure";
+    let ylabel = "Fraction of people in the stage";
+    chartIt(myProgressionChart,'myProgressionChart',xData,yData,labels,colors,bgColors,xlabel,ylabel,'Stage Progression Parameters',true,true);
+  }
+
+  async function plotInfectiousnessEtc(loadData=true){
+    if (loadData==true){
+      globalStageData = await getStageData();
+      globalLayers = await getLayerData()
+    }
+    
+    globalStagesInfectiousness = globalStageData.stagesInfectiousness;
+    xData = [];
+    yIData = [];
+    yQData = [];
+    yQLData = [];
+    for (let stageName in globalStageData.stagesInfectiousness){
+      xData.push(stageName);
+      yIData.push(parseFloat(globalStageData.stagesInfectiousness[stageName]));
+      yQLData.push(parseFloat(globalStageData.stagesQuarantineFractionLockdown[stageName]));
+      yQData.push(parseFloat(globalStageData.stagesQuarantineFraction[stageName]));
+    }
+    const colors=['blue','yellow','red','green'];
+    const bgColors=['blue','yellow','red','green'];
+    let xlabel = "Stages";
+    barChart("myInfectiousnessChart",xData,yIData,colors,bgColors,xlabel,"Infectiousness","Infectiousness of stages");
+    barChart("myQuarantineChart",xData,yQData,colors,bgColors,xlabel,"Percent isolation","Isolation practiced by stages");
+    barChart("myQuarantineLockdownChart",xData,yQLData,colors,bgColors,xlabel,"Percent isolation","Isolation practiced by stages during Lockdown");
+    
+    await plotLayers();
+  }
+
+  async function plotLayers(){
+    xData = [];
+    yData = [];
+    for (let i=0; i<globalLayers.length; i++){
+      xData.push(clone(globalLayers[i].vulnerability));
+      yData.push(globalLayers[i].fraction);
+    }
+    const colors=[];
+    const bgColors=[];  
+    barChart("myVulnerabilityChart",xData,yData,colors,bgColors,"Susceptibility","Fraction of popl","Susceptibility of layers",true);
+  }
+
+  async function barChart(chartId,xData,yData,colors,bgColors,xlabel,ylabel,title,fitYAxis=false){
+    let ctx = document.getElementById(chartId).getContext('2d');
+    let myTicks=null;
+    if (fitYAxis==false){
+      myTicks={
+          max:1,
+          min:0,
+          autoSkip:true,
+          autoSkipPadding:2
+      }
+    }
+    else{
+      myTicks={
+          min:0,
+          autoSkip:true,
+          autoSkipPadding:2
+      }
+    }
+    let myBarChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+            labels: xData,
+            datasets: [{
+                data: yData,
+                borderColor:colors,
+                backgroundColor:bgColors,
+                borderWidth: 1
+              }]
+            },
+        options: {
+            legend:{
+              display: false
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            title: {
+                display: true,
+                text: title
+            },
+            scales: {
+                yAxes: [{
+                    scaleLabel:{
+                        display: true,
+                        labelString: ylabel
+                    },
+                    ticks:myTicks
+                }],
+                xAxes: [{
+                    scaleLabel:{
+                        display: true,
+                        labelString: xlabel
+                    }
+                }]
+            }
+        }
+    });
+  }
+
+  async function getStagesFractionChartData(loadData=true){
+    const xData=[1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+    const yData=[];
+    const labels=[];
+    
+    let responseJson;
+    if (loadData==true)
+      responseJson = await getStageData();
+    else
+      responseJson = globalStageData;
+      
+    let stage_fractions_by_days=responseJson["stage_fractions_by_days"];
+    //console.log(responseJson)
+    console.log("getting fraction data");
+    for (stage_name in stage_fractions_by_days){
+      yData.push(stage_fractions_by_days[stage_name]);
+      labels.push(stage_name);
+    }
+    
+    return {xData,yData,labels};
+  }
+
+  async function getStageData(){
+    console.log("getting stage data");
+    let stages,stage_fractions_by_days,responseJson;
+    
+    const jsonURL = 'https://raw.githubusercontent.com/Coder-inquirer/SimpleCOVID19Simulator/master/LayerSim/stages_v2_1.json';
+    try {
+      let response = await fetch(jsonURL);
+      responseJson = await response.json();
+    } catch(error) {
+      console.error(error);
+    }
+    console.log(responseJson);
+    return responseJson;
+  }
+
+  function clone(obj){ 
+    return JSON.parse(JSON.stringify(obj));
+  } 
+
+  function toRad(Value) {// Converts numeric degrees to radians
+      
+      return Value * Math.PI / 180;
+  }
+
+  function haversine(lon1,lat1,lon2,lat2){
+    let R = 6371; // kilometres
+    let phi1 = toRad(lat1);
+    let phi2 = toRad(lat2);
+    let dphi = toRad(lat2-lat1);
+    let dlambda = toRad(lon2-lon1);
+
+    let a = Math.sin(dphi/2) * Math.sin(dphi/2) +
+            Math.cos(phi1) * Math.cos(phi2) *
+            Math.sin(dlambda/2) * Math.sin(dlambda/2);
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c;
+  }
+
+/*
+  function triggeringChanged(){
+    triggering = triggeringCheckbox.checked;
+  }
+  function triggerOnChanged(){
+    lockdownOnTrigger = parseInt(triggerOnDisplay.value);
+  }
+  function triggerOffChanged(){
+    lockdownOffTrigger = parseInt(triggerOffDisplay.value);
+  }
+  function nDaysChanged(){
+    nDays = parseInt(nDaysDisplay.value);
+  }
+  function betaChanged(){
+    BETA = parseFloat(betaDisplay.value);
+  }
+  function seedChanged(){
+    SEED = parseFloat(seedDisplay.value);
+  }
+  function factorODChanged(){
+    factorOD = parseFloat(factorODDisplay.value);
+  }
+*/
+  
+  function paramChanged(){
+    triggering = triggeringCheckbox.checked;
+    lockdownOnTrigger = parseInt(triggerOnDisplay.value);
+    lockdownOffTrigger = parseInt(triggerOffDisplay.value);
+    nDays = parseInt(nDaysDisplay.value);
+    BETA = parseFloat(betaDisplay.value);
+    SEED = parseFloat(seedDisplay.value);
+    factorOD = parseFloat(factorODDisplay.value);
+    discretizing = discretizingCheckbox.checked;
+  }
+
+  async function addStep(){
+    steps.push(clone({
+      'nDays':nDays,
+      'SEED' :SEED,
+      'BETA' :BETA,
+      'factorOD':factorOD,
+      'triggering':triggering,
+      'lockdownOnTrigger':lockdownOnTrigger,
+      'lockdownOffTrigger':lockdownOffTrigger
+    }));
+  }
+
+  async function continueRun(){
+    await simulate(false,false);
+    await addStep();
+  } 
+
+  async function run(){
+    console.log('First run started');
+    progress.value=0;
+    progress.style="width:100%";    //QUICK AND DIRTY
+    let myLogo = document.getElementById('myLogo');
+    myLogo.innerHTML = "EPIDEMULATOR  Loading...";
+    await simulate(!runOnce);
+    runOnce=true;
+    progress.value=1.0;
+    progress.style="width:0%";    //QUICK AND DIRTY
+    myLogo.innerHTML = "EPIDEMULATOR";
+    document.getElementById("cardChart").style.display = "block";
+    await addStep();
+  } 
+
+  async function saveJSON(saveStepsId="saveSteps",saveConfigId="saveConfig"){
+    await initialize();
+    document.getElementById(saveStepsId).value = JSON.stringify(steps);
+    globalStageData["globalLayers"]=globalLayers;
+    document.getElementById(saveConfigId).value = JSON.stringify(globalStageData);
+  }
+
+  async function loadJSON(loadStepsId="loadSteps",loadConfigId="loadConfig"){ 
+    console.log("loadConfig");
+    console.log(document.getElementById(loadConfigId).value);
+    let loadedConfig=JSON.parse(document.getElementById(loadConfigId).value);
+    
+    await initialize();
+    runOnce=true;
+    
+    for (let key in loadedConfig){
+      if (globalStageData.hasOwnProperty(key)){
+        globalStageData[key]=clone(loadedConfig[key]);
+        console.log("loaded:",key);
+        console.log(globalStageData[key]);
+      }
+      if (key=="globalLayers"){
+        console.log("globalLayers");
+        globalLayers=clone(loadedConfig[key]);
+      }
+    }
+    
+    
+    await initialize(false);
+    await plotParams(false);
+    await plotInfectiousnessEtc(false);
+    
+    console.log("loadSteps");
+    let loadedSteps=JSON.parse(document.getElementById(loadStepsId).value);
+    console.log(loadedSteps);
+    
+    for (let i=0; i<loadedSteps.length; i++){
+      console.log(i);
+      nDays=clone(loadedSteps[i]['nDays']);
+      SEED=clone(loadedSteps[i]['SEED']);
+      BETA=clone(loadedSteps[i]['BETA']);
+      factorOD=clone(loadedSteps[i]['factorOD']);
+      triggering=clone(loadedSteps[i]['triggering']);
+      lockdownOnTrigger=clone(loadedSteps[i]['lockdownOnTrigger']);
+      lockdownOffTrigger=clone(loadedSteps[i]['lockdownOffTrigger']);
+      if (i==0)
+        await run();
+      else
+        await continueRun();
+    }
+  }
+
+  async function copyToClipboard(elementId){
+    var copyText = document.getElementById(elementId);
+    copyText.select();
+    copyText.setSelectionRange(0, 99999)
+    document.execCommand("copy");
+  }
+
+  plotParams();
+  plotInfectiousnessEtc();
+  //plotQuarantineFraction();
+
+</script>
+
+
+
+</body></html>
