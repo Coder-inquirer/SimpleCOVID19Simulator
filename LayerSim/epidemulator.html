@@ -550,14 +550,23 @@ $(document).ready(function(){
 
   */
 
-  // PARAMETERS __________________________
+  // PARAMETERS _________________________________________________________
   const N_HISTORY_DAYS = 14;
   const T_STEP = 1;
-  let BETA = 1/0.5;
-  let SEED = 1;
+  let BETA = 6.7;
+  let SEED = 5;
   let factorOD = 0.01;
+  let maxDistance=100;
+  
+  let triggering = true;
+  let lockdownOnTrigger = 30;
+  let lockdownOffTrigger = 20;
+  let nDays = 60;
+  let discretizing = false;
+  let levelsN = [1.0,4.0,250.0]; //individual,family,locality
+  let levelsP = [0.65,0.3,0.05];
 
-  // GLOBAL VARIABLES ____________________
+  // GLOBAL VARIABLES ___________________________________________________
 
   let myLayers = [];
   let myBlocks = [];
@@ -582,10 +591,6 @@ $(document).ready(function(){
   let config=[];
 
   let progress = document.getElementById('myProgressBar');
-  let triggering = true;
-  let lockdownOnTrigger = 1000;
-  let lockdownOffTrigger = 50;
-  let nDays = 60;
 
   let mySIRChart=null,mySChart=null,myIChart=null,myRChart=null,myProgressionChart=null;
   let triggeringCheckbox = document.getElementById('triggeringCheckbox');
@@ -628,6 +633,17 @@ $(document).ready(function(){
     
     updateExpose(force){
       let newExposed = (force*this.susc*this.S);
+      if (discretizing==true){
+        let newerExposed=0.0;
+        for (let level in levelsN){
+          //console.log(level,levelsN[level],levelsP[level]);
+          let number = levelsP[level]*newExposed/levelsN[level];
+          newerExposed += Math.floor(number) * levelsN[level];
+          if(Math.random()<number-Math.floor(number))
+            newerExposed += levelsN[level];
+        }
+        newExposed = clone(newerExposed);        
+      }
       newExposed = Math.min(newExposed,this.S);
       this.historyPush(newExposed);
     }
@@ -842,7 +858,7 @@ $(document).ready(function(){
         }
         else{
           dist = haversine(wards[i]['lon'],wards[i]['lat'],wards[j]['lon'],wards[j]['lat']);
-          if (dist<20)
+          if (dist<maxDistance)
             adj[i].push(factorOD/dist);
           else
             adj[i].push(0);
@@ -1183,28 +1199,33 @@ $(document).ready(function(){
   function triggeringChanged(){
     triggering = triggeringCheckbox.checked;
   }
-
   function triggerOnChanged(){
     lockdownOnTrigger = parseInt(triggerOnDisplay.value);
   }
-
   function triggerOffChanged(){
     lockdownOffTrigger = parseInt(triggerOffDisplay.value);
   }
-
   function nDaysChanged(){
     nDays = parseInt(nDaysDisplay.value);
   }
-
   function betaChanged(){
     BETA = parseFloat(betaDisplay.value);
   }
-  
   function seedChanged(){
     SEED = parseFloat(seedDisplay.value);
   }
-  
   function factorODChanged(){
+    factorOD = parseFloat(factorODDisplay.value);
+  }
+
+  
+  function paramChanged(){
+    triggering = triggeringCheckbox.checked;
+    lockdownOnTrigger = parseInt(triggerOnDisplay.value);
+    lockdownOffTrigger = parseInt(triggerOffDisplay.value);
+    nDays = parseInt(nDaysDisplay.value);
+    BETA = parseFloat(betaDisplay.value);
+    SEED = parseFloat(seedDisplay.value);
     factorOD = parseFloat(factorODDisplay.value);
   }
 
