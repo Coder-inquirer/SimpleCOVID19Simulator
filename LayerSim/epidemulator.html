@@ -250,7 +250,7 @@
     \(N_i\) : total number of people in the \(i^{th}\) layer<br>
     \(N_{stage,i}\) : number of people in stage \(stage\) in the \(i^{th}\) layer<br>
     The sum \(\sum_{j=1}^{N_{layers}}\) is over all layers in the city<br>
-    \(Adj_{i,j}\) : is the matrix of coupling between the infectiousness of layer \(j\) and the force of infectiousness on layer \(i\)<br>
+    \(Adj_{i,j} = (\textit{Adjacency factor})/(\textit{distance in km})_{i,j} \) : represents the matrix of coupling between the infectiousness of layer \(j\) and the force of infectiousness on layer \(i\)<br>
     \({\Delta E}_{i,day} \) : the number of people exposed in layer \(i\) on day '\(day\)'<br>
     <br>
     The structure of the model used by this simulator is as follows: 
@@ -286,6 +286,7 @@
     <li>Press 'Continue' to continue the simulation with new parameters</li>
     <li>The steps, that is the parameters of each run or continue step can be saved by copying the JSON array given in the Save modal</li>
     <li>Custom steps and configuration(which includes the parameters plotted in graphs) can also be loaded from the Load modal.</li>
+    <li>Stochastic discretization can be checked to add stochasticity to infection of people.</li>
   </ul>
   </p>
 </div>
@@ -349,28 +350,28 @@
           <div class="row">
             <div class="col-sm-8">No. of Days : </div>
             <div class="col-sm-4">
-              <input type="text" class="form-control form-control-sm" value="500" id="nDaysDisplay" onchange="nDaysChanged()">
+              <input type="text" class="form-control form-control-sm" value="500" id="nDaysDisplay" onchange="paramChanged()">
             </div>
           </div>
           <br>
           <div class="row">
             <div class="col-sm-8">Seed exposed : </div>
             <div class="col-sm-4">
-              <input type="text" class="form-control form-control-sm" value="0.617" id="seedDisplay" onchange="seedChanged()">
+              <input type="text" class="form-control form-control-sm" value="0.617" id="seedDisplay" onchange="paramChanged()">
             </div>
           </div>
           <br>
           <div class="row">
             <div class="col-sm-8">Beta : </div>
             <div class="col-sm-4">
-              <input type="text" class="form-control form-control-sm" value="0.617" id="betaDisplay" onchange="betaChanged()">
+              <input type="text" class="form-control form-control-sm" value="0.617" id="betaDisplay" onchange="paramChanged()">
             </div>
           </div>
           <br>
           <div class="row">
             <div class="col-sm-8">Adjacency factor : </div>
             <div class="col-sm-4">
-              <input type="text" class="form-control form-control-sm" value="0.617" id="factorODDisplay" onchange="factorODChanged()">
+              <input type="text" class="form-control form-control-sm" value="0.617" id="factorODDisplay" onchange="paramChanged()">
             </div>
           </div>
           <br>
@@ -378,7 +379,7 @@
             <div class="col-sm-8">Lockdown Triggering :
             </div> 
             <div class="col-sm-4 text-center">
-              <input id="triggeringCheckbox" type="checkbox" class="form-check-input" checked onchange="triggeringChanged()">
+              <input id="triggeringCheckbox" type="checkbox" class="form-check-input" checked onchange="paramChanged()">
             </div>
           </div>
           <br>
@@ -386,7 +387,7 @@
             <div class="col-sm-8">Trigger On :<br>(active cases more than)
             </div>
             <div class="col-sm-4">
-              <input type="text" class="form-control form-control-sm" value="1000" id="triggerOnDisplay" onchange="triggerOnChanged()">
+              <input type="text" class="form-control form-control-sm" value="1000" id="triggerOnDisplay" onchange="paramChanged()">
             </div>
           </div>
           <br>
@@ -394,9 +395,18 @@
             <div class="col-sm-8">Trigger Off :<br>(active cases less than)
             </div>
             <div class="col-sm-4">
-              <input type="text" class="form-control form-control-sm" value="50" id="triggerOffDisplay" onchange="triggerOffChanged()">
+              <input type="text" class="form-control form-control-sm" value="50" id="triggerOffDisplay" onchange="paramChanged()">
             </div>
           </div>
+          <br>
+          <div class="row">
+            <div class="col-sm-8">Stochastic discretization :
+            </div> 
+            <div class="col-sm-4 text-center">
+              <input id="discretizingCheckbox" type="checkbox" class="form-check-input" checked onchange="paramChanged()">
+            </div>
+          </div>
+          <br>
           </code>
           <div class="row text-center">
             <button class="btn" data-toggle="modal" data-target="#myLoadModal">Load JSON data</button>
@@ -553,16 +563,16 @@ $(document).ready(function(){
   // PARAMETERS _________________________________________________________
   const N_HISTORY_DAYS = 14;
   const T_STEP = 1;
-  let BETA = 6.7;
+  let BETA = 7.2;
   let SEED = 5;
   let factorOD = 0.01;
   let maxDistance=100;
   
+  let nDays = 60;
   let triggering = true;
   let lockdownOnTrigger = 30;
   let lockdownOffTrigger = 20;
-  let nDays = 60;
-  let discretizing = false;
+  let discretizing = true;
   let levelsN = [1.0,4.0,250.0]; //individual,family,locality
   let levelsP = [0.65,0.3,0.05];
 
@@ -600,6 +610,7 @@ $(document).ready(function(){
   let betaDisplay        = document.getElementById('betaDisplay');
   let seedDisplay        = document.getElementById('seedDisplay');
   let factorODDisplay    = document.getElementById('factorODDisplay');
+  let discretizingCheckbox= document.getElementById('discretizingCheckbox');
   let myLogo = document.getElementById('myLogo');
   let runOnce=false;
 
@@ -609,6 +620,7 @@ $(document).ready(function(){
   triggerOnDisplay.value=lockdownOnTrigger;
   seedDisplay.value=SEED;
   factorODDisplay.value=factorOD;
+  discretizingCheckbox.checked=discretizing;
 
 
   //triggering = triggeringCheckbox.value;
@@ -1074,7 +1086,7 @@ $(document).ready(function(){
     }
     const colors=[];
     const bgColors=[];  
-    barChart("myVulnerabilityChart",xData,yData,colors,bgColors,"Vulnerability","Fraction of popl","Vulnerability of layers",true);
+    barChart("myVulnerabilityChart",xData,yData,colors,bgColors,"Susceptibility","Fraction of popl","Susceptibility of layers",true);
   }
 
   async function barChart(chartId,xData,yData,colors,bgColors,xlabel,ylabel,title,fitYAxis=false){
@@ -1196,6 +1208,7 @@ $(document).ready(function(){
     return R * c;
   }
 
+/*
   function triggeringChanged(){
     triggering = triggeringCheckbox.checked;
   }
@@ -1217,7 +1230,7 @@ $(document).ready(function(){
   function factorODChanged(){
     factorOD = parseFloat(factorODDisplay.value);
   }
-
+*/
   
   function paramChanged(){
     triggering = triggeringCheckbox.checked;
@@ -1227,6 +1240,7 @@ $(document).ready(function(){
     BETA = parseFloat(betaDisplay.value);
     SEED = parseFloat(seedDisplay.value);
     factorOD = parseFloat(factorODDisplay.value);
+    discretizing = discretizingCheckbox.checked;
   }
 
   async function addStep(){
