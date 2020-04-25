@@ -25,13 +25,13 @@
     color: #777;
   }
   h3, h4 {
-    margin: 10px 0 30px 0;
+    margin: 1% 0 3% 0;
     letter-spacing: 10px;      
     font-size: 20px;
     color: #111;
   }
   .container {
-    padding: 80px 120px;
+    padding: 8% 12%;
     width:100%;
   }
   .container-horizontal-padding {
@@ -39,28 +39,14 @@
     width:100%;
   }
   .person {
-    border: 10px solid transparent;
-    margin-bottom: 25px;
+    border: 1% solid transparent;
+    margin-bottom: 10%;
     width: 80%;
     height: 80%;
     opacity: 0.7;
   }
   .person:hover {
     border-color: #f1f1f1;
-  }
-  .carousel-inner img {
-    -webkit-filter: grayscale(90%);
-    filter: grayscale(90%); /* make all photos black and white */ 
-    width: 100%; /* Set width to 100% */
-    margin: auto;
-  }
-  .carousel-caption h3 {
-    color: #fff !important;
-  }
-  @media (max-width: 600px) {
-    .carousel-caption {
-      display: none; /* Hide the carousel text when the screen is less than 600 pixels wide */
-    }
   }
   .bg-1 {
     background: #2d2d30;
@@ -76,21 +62,12 @@
       width:100%;
       background-color: #2d2d30;
       color: #fff;
-      padding: 100px 0px;
+      padding: 6% 0%;
       font-family: Montserrat, sans-serif;
   }
   .list-group-item:last-child {
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
-  }
-  .thumbnail {
-    padding: 0 0 15px 0;
-    border: none;
-    border-radius: 0;
-  }
-  .thumbnail p {
-    margin-top: 15px;
-    color: #555;
   }
   .btn {
     background-color: #333;
@@ -110,17 +87,11 @@
     font-size: 30px;
   }
   .modal-header, .modal-body {
-    padding: 40px 50px;
+    padding: 4% 5%;
   }
   .nav-tabs li a {
     color: #777;
-  }
-  #googleMap {
-    width: 100%;
-    height: 400px;
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
-  }  
+  } 
   .navbar {
     font-family: Montserrat, sans-serif;
     margin-bottom: 0;
@@ -153,19 +124,6 @@
   .dropdown-menu li a:hover {
     background-color: red !important;
   }
-  
-  footer {
-    background-color: #2d2d30;
-    color: #f5f5f5;
-    padding: 32px;
-  }
-  footer a {
-    color: #f5f5f5;
-  }
-  footer a:hover {
-    color: #777;
-    text-decoration: none;
-  }  
   .form-control {
     border-radius: 0;
   }
@@ -252,7 +210,21 @@
     The sum \(\sum_{j=1}^{N_{layers}}\) is over all layers in the city<br>
     \(Adj_{i,j} = (\textit{Adjacency factor})/(\textit{distance in km})_{i,j} \) : represents the matrix of coupling between the infectiousness of layer \(j\) and the force of infectiousness on layer \(i\)<br>
     \({\Delta E}_{i,day} \) : the number of people exposed in layer \(i\) on day '\(day\)'<br>
-    <br>
+    
+  <br>
+  </p>
+  <p  class="text-left">
+  <b>Basic usage instructions:</b>
+  <br>
+  <ul class="text-left">
+    <li>Set the parameters as required</li>
+    <li>Press the 'Run' button to run the simulation from the beginning with the specified parameters</li>
+    <li>Press 'Continue' to continue the simulation with new parameters</li>
+    <li>The steps, that is the parameters of each run or continue step can be saved by copying the JSON array given in the Save modal</li>
+    <li>Custom steps and configuration(which includes the parameters plotted in graphs) can also be loaded from the Load modal.</li>
+    <li>Stochastic discretization can be checked to add stochasticity to infection of people.</li>
+  </ul>
+  <br>
     The structure of the model used by this simulator is as follows: 
   <code><pre class="text-left">
   
@@ -275,19 +247,6 @@
     -progression of stages, i.e. fraction of people in 
       each stage, n days after exposure 
   </pre></code>
-  <br>
-  </p>
-  <p  class="text-left">
-  <b>Basic usage instructions:</b>
-  <br>
-  <ul class="text-left">
-    <li>Set the parameters as required</li>
-    <li>Press the 'Run' button to run the simulation from the beginning with the specified parameters</li>
-    <li>Press 'Continue' to continue the simulation with new parameters</li>
-    <li>The steps, that is the parameters of each run or continue step can be saved by copying the JSON array given in the Save modal</li>
-    <li>Custom steps and configuration(which includes the parameters plotted in graphs) can also be loaded from the Load modal.</li>
-    <li>Stochastic discretization can be checked to add stochasticity to infection of people.</li>
-  </ul>
   </p>
 </div>
 
