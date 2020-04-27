@@ -12,6 +12,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
   
+  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   
@@ -19,6 +20,7 @@
     !function(a){var b="object"==typeof self&&self.self===self&&self||"object"==typeof global&&global.global===global&&global;"function"==typeof define&&define.amd?define(["exports"],function(c){b.ParticleNetwork=a(b,c)}):"object"==typeof module&&module.exports?module.exports=a(b,{}):b.ParticleNetwork=a(b,{})}(function(a,b){var c=function(a){this.canvas=a.canvas,this.g=a.g,this.particleColor=a.options.particleColor,this.x=Math.random()*this.canvas.width,this.y=Math.random()*this.canvas.height,this.velocity={x:(Math.random()-.5)*a.options.velocity,y:(Math.random()-.5)*a.options.velocity}};return c.prototype.update=function(){(this.x>this.canvas.width+20||this.x<-20)&&(this.velocity.x=-this.velocity.x),(this.y>this.canvas.height+20||this.y<-20)&&(this.velocity.y=-this.velocity.y),this.x+=this.velocity.x,this.y+=this.velocity.y},c.prototype.h=function(){this.g.beginPath(),this.g.fillStyle=this.particleColor,this.g.globalAlpha=.7,this.g.arc(this.x,this.y,1.5,0,2*Math.PI),this.g.fill()},b=function(a,b){this.i=a,this.i.size={width:this.i.offsetWidth,height:this.i.offsetHeight},b=void 0!==b?b:{},this.options={particleColor:void 0!==b.particleColor?b.particleColor:"#fff",background:void 0!==b.background?b.background:"#1a252f",interactive:void 0!==b.interactive?b.interactive:!0,velocity:this.setVelocity(b.speed),density:this.j(b.density)},this.init()},b.prototype.init=function(){if(this.k=document.createElement("div"),this.i.appendChild(this.k),this.l(this.k,{position:"absolute",top:0,left:0,bottom:0,right:0,"z-index":1}),/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(this.options.background))this.l(this.k,{background:this.options.background});else{if(!/\.(gif|jpg|jpeg|tiff|png)$/i.test(this.options.background))return console.error("Please specify a valid background image or hexadecimal color"),!1;this.l(this.k,{background:'url("'+this.options.background+'") no-repeat center',"background-size":"cover"})}if(!/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(this.options.particleColor))return console.error("Please specify a valid particleColor hexadecimal color"),!1;this.canvas=document.createElement("canvas"),this.i.appendChild(this.canvas),this.g=this.canvas.getContext("2d"),this.canvas.width=this.i.size.width,this.canvas.height=this.i.size.height,this.l(this.i,{position:"relative"}),this.l(this.canvas,{"z-index":"20",position:"relative"}),window.addEventListener("resize",function(){return this.i.offsetWidth===this.i.size.width&&this.i.offsetHeight===this.i.size.height?!1:(this.canvas.width=this.i.size.width=this.i.offsetWidth,this.canvas.height=this.i.size.height=this.i.offsetHeight,clearTimeout(this.m),void(this.m=setTimeout(function(){this.o=[];for(var a=0;a<this.canvas.width*this.canvas.height/this.options.density;a++)this.o.push(new c(this));this.options.interactive&&this.o.push(this.p),requestAnimationFrame(this.update.bind(this))}.bind(this),500)))}.bind(this)),this.o=[];for(var a=0;a<this.canvas.width*this.canvas.height/this.options.density;a++)this.o.push(new c(this));this.options.interactive&&(this.p=new c(this),this.p.velocity={x:0,y:0},this.o.push(this.p),this.canvas.addEventListener("mousemove",function(a){this.p.x=a.clientX-this.canvas.offsetLeft,this.p.y=a.clientY-this.canvas.offsetTop}.bind(this)),this.canvas.addEventListener("mouseup",function(a){this.p.velocity={x:(Math.random()-.5)*this.options.velocity,y:(Math.random()-.5)*this.options.velocity},this.p=new c(this),this.p.velocity={x:0,y:0},this.o.push(this.p)}.bind(this))),requestAnimationFrame(this.update.bind(this))},b.prototype.update=function(){this.g.clearRect(0,0,this.canvas.width,this.canvas.height),this.g.globalAlpha=1;for(var a=0;a<this.o.length;a++){this.o[a].update(),this.o[a].h();for(var b=this.o.length-1;b>a;b--){var c=Math.sqrt(Math.pow(this.o[a].x-this.o[b].x,2)+Math.pow(this.o[a].y-this.o[b].y,2));c>120||(this.g.beginPath(),this.g.strokeStyle=this.options.particleColor,this.g.globalAlpha=(120-c)/120,this.g.lineWidth=.7,this.g.moveTo(this.o[a].x,this.o[a].y),this.g.lineTo(this.o[b].x,this.o[b].y),this.g.stroke())}}0!==this.options.velocity&&requestAnimationFrame(this.update.bind(this))},b.prototype.setVelocity=function(a){return"fastest"===a?4:"faster"===a?2:"fast"===a?1:"slow"===a?.33:"none"===a?0:.66},b.prototype.j=function(a){return"high"===a?5e3:"low"===a?2e4:isNaN(parseInt(a,10))?1e4:a},b.prototype.l=function(a,b){for(var c in b)a.style[c]=b[c]},b});
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+  
   <style>
   body {
     font: 400 15px/1.8 Lato, sans-serif;
@@ -187,7 +189,7 @@
 </div>
 
 
-<!-- Container (The Band Section) -->
+<!-- Container (The Theory Section) -->
 <div id="info" class="container text-center">
   <h3>EPIDEMIOLOGICAL SIMULATOR</h3>
   <p class="text-center"><q>...all models are approximations. <br>Essentially, all models are wrong, but some are useful.<br> However, the approximate nature of the model must always be borne in mind...</q><br> — George P. Box</p>
@@ -195,6 +197,22 @@
     <br>
     This page showcases a general epidemiological simulator written in Javascript. <br>
     Here, the city is Delhi and the blocks represent the electoral wards in Delhi. <br>
+  </p>
+  <p  class="text-left">
+  <b>Basic usage instructions:</b>
+  <br>
+  <ul class="text-left">
+    <li>Set the parameters as required</li>
+    <li>Press the 'Run' button to run the simulation from the beginning with the specified parameters</li>
+    <li>Press 'Continue' to continue the simulation with new parameters</li>
+    <li>'Stochastic discretization' option can be ticked to add stochasticity to infection of people.</li>
+    <li>The parameters of each run or continue step can be saved by copying the JSON array given in the Save modal</li>
+    <li>Custom steps and configuration(which includes the parameters plotted in graphs) can also be loaded from the Load modal.</li>
+  </ul>
+  <br>
+  </p>
+  <p class="text-left">
+    <b>Information about the model</b><br>
     The susceptibility data in the default configuration is taken from distribution of number of interaction person-to person interactions as calculated for Delhi in a paper(provide link to paper).<br>
     The formulae used in the computation are the following:<br>
     \begin{align}
@@ -215,18 +233,8 @@
     
   <br>
   </p>
-  <p  class="text-left">
-  <b>Basic usage instructions:</b>
-  <br>
-  <ul class="text-left">
-    <li>Set the parameters as required</li>
-    <li>Press the 'Run' button to run the simulation from the beginning with the specified parameters</li>
-    <li>Press 'Continue' to continue the simulation with new parameters</li>
-    <li>The steps, that is the parameters of each run or continue step can be saved by copying the JSON array given in the Save modal</li>
-    <li>Custom steps and configuration(which includes the parameters plotted in graphs) can also be loaded from the Load modal.</li>
-    <li>Stochastic discretization can be checked to add stochasticity to infection of people.</li>
-  </ul>
-  <br>
+  
+  <p>
     The structure of the model used by this simulator is as follows: 
   <code><pre class="text-left">
   
@@ -238,7 +246,7 @@
     -----|
     -----|-susceptibility
     -----|-total number of people
-    -----|-number of susceptible
+    -----|-number of susceptible people
     -----|-number of people in various stages like: exposed, asymptomatic, infected, recovered
              is calculated from a running history of number of people exposed each day
              
@@ -266,14 +274,14 @@
         </li>
       </ul>
     </div>
-    <br>
+    <br><br>
     <div class="card-body">
       <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade" id="logarithmic" role="tabpanel" aria-labelledby="logarithmic-tab">
-          <canvas id="myChart"></canvas>
+          <div id="myChart" style="width:100%"></div>
         </div>
         <div class="tab-pane fade" id="linear" role="tabpanel" aria-labelledby="linear-tab">
-          <canvas id="myChartLinear"></canvas>
+          <div id="myChartLinear" style="width:100%"></div>
         </div>
       </div>
     </div>
@@ -282,13 +290,13 @@
   <div class="row text-center">
     <div class="row">
       <div class="col-sm-4">
-        <canvas id="mySChart"></canvas>
+        <div id="mySChart" style="width:100%"></div>
       </div>
       <div class="col-sm-4">
-        <canvas id="myIChart"></canvas>
+        <div id="myIChart"></div>
       </div>
       <div class="col-sm-4">
-        <canvas id="myRChart"></canvas>
+        <div id="myRChart"></div>
       </div>
     </div>
   </div>
@@ -533,9 +541,10 @@ $(document).ready(function(){
   let triggering = true;
   let lockdownOnTrigger = 30;
   let lockdownOffTrigger = 20;
-  let discretizing = true;
-  let levelsN = [1.0,4.0,250.0]; //individual,family,locality
-  let levelsP = [0.65,0.3,0.05];
+  let discretizing = false;
+  let discreteRuns = 10;
+  let levelsN = [1.0, 4.0, 60,  1000.0]; //individual,family,locality
+  let levelsP = [0.65,0.3, 0.04,0.01];
 
   // GLOBAL VARIABLES ___________________________________________________
 
@@ -846,7 +855,7 @@ $(document).ready(function(){
     yRData=[];
   }
 
-  async function simulate(loadData=true,wannaInitialize=true){
+  async function simulate(loadData=true,wannaInitialize=true,repeat=false,opacity=1){
     let t_0=0;
     if (wannaInitialize==true){
       console.log("initializing");
@@ -917,14 +926,29 @@ $(document).ready(function(){
                     'rgba(255,0,0,0.5)',
                     'rgba(0,255,0,0.5)'
                    ];
-                   
-    let xlabel = "Days";
-    let ylabel = "Number of people";
-    chartIt(mySIRChart,'myChart',xData,[ySData,yIData,yRData],["S","I","R"],colors,bgColors,xlabel,ylabel,'SIR Simulation',true,false,'logarithmic');
-    chartIt(mySIRChart,'myChartLinear',xData,[ySData,yIData,yRData],["S","I","R"],colors,bgColors,xlabel,ylabel,'SIR Simulation',true,false,'linear');
+    
+    if (repeat==false){
+        let xlabel = "Days";
+        let ylabel = "Number of people";
+        chartItPlotly('myChart',xData,[ySData,yIData,yRData],['#1f77b4','#d62728','#2ca02c'],xlabel,ylabel,'SIR Simulation',["S","I","R"],'log');
+        chartItPlotly('myChartLinear',xData,[ySData,yIData,yRData],['#1f77b4','#d62728','#2ca02c'],xlabel,ylabel,'SIR Simulation',["S","I","R"]);
+        chartItPlotly('mySChart',xData,[ySData],['#1f77b4'],xlabel,ylabel,'Susceptible');
+        chartItPlotly('myIChart',xData,[yIData],['#d62728'],xlabel,ylabel,'Infectious');
+        chartItPlotly('myRChart',xData,[yRData],['#2ca02c'],xlabel,ylabel,'Recovered');
+    }
+    else{
+        chartAddItPlotly('myChart',xData,[ySData,yIData,yRData],['#1f77b4','#d62728','#2ca02c']);//,xlabel,ylabel,'SIR Simulation',["S","I","R"],'log');
+        chartAddItPlotly('myChartLinear',xData,[ySData,yIData,yRData],['#1f77b4','#d62728','#2ca02c']);//,xlabel,ylabel,'SIR Simulation',["S","I","R"]);
+        chartAddItPlotly('mySChart',xData,[ySData],['#1f77b4'],[""],'markers',0.5);//,xlabel,ylabel,'Susceptible');
+        chartAddItPlotly('myIChart',xData,[yIData],['#d62728'],[""],'markers',0.5);//,xlabel,ylabel,'Infectious');
+        chartAddItPlotly('myRChart',xData,[yRData],['#2ca02c'],[""],'markers',0.5);//,xlabel,ylabel,'Recovered');
+    }
+    /*
+ chartIt(mySIRChart,'myChartLinear',xData,[ySData,yIData,yRData],["S","I","R"],colors,bgColors,xlabel,ylabel,'SIR Simulation',true,false,'linear');
     chartIt(mySChart,'mySChart',xData,[ySData],["S"],[colors[0]],[bgColors[0]],xlabel,ylabel,'Susceptible');
     chartIt(myIChart,'myIChart',xData,[yIData],["I"],[colors[1]],[bgColors[1]],xlabel,ylabel,'Infectious');
     chartIt(myRChart,'myRChart',xData,[yRData],["R"],[colors[2]],[bgColors[2]],xlabel,ylabel,'Recovered');
+    */
     progress.style="width:0%";    //QUICK AND DIRTY
     console.log(myBlocks[0]);
     
@@ -932,6 +956,63 @@ $(document).ready(function(){
     rerunBtn.style.display = "inline";
     myLogo = document.getElementById('myLogo');
     myLogo.innerHTML = "EPIDEMULATOR";
+  }
+
+  async function chartItPlotly(chartId,xData,yData,color,xTitle,yTitle,title,legend=[""],yScale='linear',mode='lines+markers',opacity=1){
+    let data = [];
+    let trace;
+    let showlegend;
+    if (legend[0].length==0)
+        showlegend = false
+    
+    for (let i in yData){
+        trace = {
+          x: xData,
+          y: yData[i],
+          mode: mode,
+          name: legend[i],
+          showlegend: showlegend,
+          marker: {
+            color: color[i],
+            opacity: opacity
+          }
+        };
+        data.push(clone(trace));
+    }
+    
+    let layout = {
+      title: title,
+      xaxis: {
+        title: xTitle
+      },
+      yaxis: {
+        title: yTitle,
+        type: yScale
+      }
+    };
+    
+    Plotly.newPlot(chartId, data, layout);
+  }
+  
+  async function chartAddItPlotly(chartId,xData,yData,color,legend=[""],mode='lines+markers',opacity=1){
+    let data = [];
+    let trace;
+    for (let i in yData){
+        trace = {
+          x: xData,
+          y: yData[i],
+          mode: mode,
+          name: legend[i],
+          showlegend: false,
+          marker: {
+            color: color[i],
+            opacity: opacity
+          }
+        };
+        data.push(clone(trace));
+    }
+    
+    Plotly.addTraces(chartId, data);
   }
 
   async function chartIt(myChart,chartId,xData,yData,labels,colors,bgColors,xlabel,ylabel,title,legendDisplay=false,stacked=false,yType='linear'){ // data format:  xData=[x1,x2,...], yData=[[y11,y12,...],[y21,y22,...],...], labels=[l1,l2,...]
@@ -1245,13 +1326,20 @@ $(document).ready(function(){
     await addStep();
   } 
 
-  async function run(){
+  async function run(multiple=false){
     console.log('First run started');
     progress.value=0;
     progress.style="width:100%";    //QUICK AND DIRTY
     let myLogo = document.getElementById('myLogo');
     myLogo.innerHTML = "EPIDEMULATOR  Loading...";
-    await simulate(!runOnce);
+    if (discretizingCheckbox.checked==false){
+        await simulate(!runOnce);
+    }
+    else{
+        await simulate(!runOnce);
+        for (let i=0; i<discreteRuns-1; i++)
+            await simulate(!runOnce,true,true);
+    }
     runOnce=true;
     progress.value=1.0;
     progress.style="width:0%";    //QUICK AND DIRTY
